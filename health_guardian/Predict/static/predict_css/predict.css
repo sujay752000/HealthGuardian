@@ -1,0 +1,26 @@
+.part_container{
+	width: 50%;
+	height: 50vh;
+	border: 2px solid black;
+	padding: 20px 20px;
+}
+.predict_container{
+	width: 100%;
+	height: 100%;
+	border: 2px solid rgb(108, 85, 182);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+	padding: 5px 10px;
+}
+
+#multi_option{
+	min-width: 100%;
+	border: 1px solid black;
+}
+
+.predict_submit_btn{
+	width: 60%;
+	height: 40px;
+}
