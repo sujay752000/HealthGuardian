@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Predict',
-    'llm_functionality'
+    'llm_functionality',
+    'accounts'
 ]
 
 MIDDLEWARE = [
