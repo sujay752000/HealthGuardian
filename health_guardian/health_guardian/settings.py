@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
+import environ
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -17,6 +18,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # STATIC_DIR=os.path.join(BASE_DIR,'static')
 # TEMPLATE_DIR = os.path.join(BASE_DIR,'templates')
 
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -39,7 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Predict'
+    'Predict',
+    'llm_functionality'
 ]
 
 MIDDLEWARE = [
@@ -57,7 +65,7 @@ ROOT_URLCONF = 'health_guardian.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR/ 'templates',
+        'DIRS': [BASE_DIR/ 'health_guardian/templates',
                  BASE_DIR/ 'Predict/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -120,7 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS=[BASE_DIR/ 'static',
+STATICFILES_DIRS=[BASE_DIR/ 'health_guardian/static',
                   BASE_DIR/ 'Predict/static']
 MEDIA_ROOT=os.path.join(BASE_DIR,'static')
 
@@ -128,3 +136,6 @@ MEDIA_ROOT=os.path.join(BASE_DIR,'static')
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# envrionment variables
+GOOGLE_API_KEY = env('GOOGLE_API_KEY')
