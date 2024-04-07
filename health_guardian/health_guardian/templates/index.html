@@ -30,11 +30,11 @@
             </button>
             <div class="collapse navbar-collapse justify-content-end fw-semibold" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link active" href="#home">Home</a>
-                    <a class="nav-link" href="#features">Features</a>
-                    <a class="nav-link" href="#search_doctors">Find Doctors</a>
-                    <a class="nav-link" href="#search_hospitals">Find Hospitals</a>
-                    <a class="nav-link" href="#contact_us">Contact Us</a>
+                    <a class="nav-link " href="{% url 'app_home' %}#home">Home</a>
+                    <a class="nav-link " href="{% url 'app_home' %}#features">Features</a>
+                    <a class="nav-link " href="{% url 'app_home' %}#search_doctors">Find Doctors</a>
+                    <a class="nav-link " href="{% url 'app_home' %}#search_hospitals">Find Hospitals</a>
+                    <a class="nav-link " href="{% url 'app_home' %}#contact_us">Contact Us</a>
                     <!-- <a class="nav-link disabled" aria-disabled="true">Disabled</a> -->
                     <!-- login -->
                     <li class="nav-item dropdown">
@@ -43,15 +43,15 @@
                             Login as
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Patient
+                            <li><a class="dropdown-item" href="{% url 'patient_login' %}">Patient
                                     <i class="ms-1 fa-solid fa-hospital-user fa-sm" style="color: #ffffff;"></i>
                                 </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Doctor
+                            <li><a class="dropdown-item" href="{% url 'doctor_login' %}">Doctor
                                     <i class="ms-1 fa-solid fa-user-doctor fa-sm" style="color: #ffffff;"></i>
                                 </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Admin
+                            <li><a class="dropdown-item" href="{% url 'admin_login' %}">Admin
                                     <i class="ms-1 fa-solid fa-user-tie fa-sm" style="color: #ffffff;"></i>
                                 </a>
                             </li>
@@ -65,15 +65,15 @@
                             Signup as
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Patient
+                            <li><a class="dropdown-item" href="{% url 'patient_signup' %}">Patient
                                     <i class="ms-1 fa-solid fa-hospital-user fa-sm" style="color: #ffffff;"></i>
                                 </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Doctor
+                            <li><a class="dropdown-item" href="{% url 'doctor_signup' %}">Doctor
                                     <i class="ms-1 fa-solid fa-user-doctor fa-sm" style="color: #ffffff;"></i>
                                 </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Admin
+                            <li><a class="dropdown-item" href="{% url 'admin_signup' %}">Admin
                                     <i class="ms-1 fa-solid fa-user-tie fa-sm" style="color: #ffffff;"></i>
                                 </a>
                             </li>
@@ -83,6 +83,8 @@
             </div>
         </div>
     </nav>
+
+    {% block content %}
 
 
     <!-- intro-content -->
@@ -112,8 +114,8 @@
     <div class="container-fluid">
         <div class="row  d-flex justify-content-evenly row-gap-3">
             <div class="shadow bg-body-tertiary col-xl-2 col-lg-3 col-md-4 card col-sm-5 col-8">
-                <img src="{% static 'assets/healthcare_8507088.png' %}" class="card-img-top img-thumbnail rounded mx-auto d-block"
-                    style="width: 70%;" alt="...">
+                <img src="{% static 'assets/healthcare_8507088.png' %}"
+                    class="card-img-top img-thumbnail rounded mx-auto d-block" style="width: 70%;" alt="...">
                 <div class="card-body container-fluid">
                     <h5>Predict Diseases</h5>
                     <p class="card-text">Cutting-edge ML model predicts diseases from symptoms. Empowering proactive
@@ -121,8 +123,8 @@
                 </div>
             </div>
             <div class="shadow bg-body-tertiary col-xl-2 col-lg-3 col-md-4 card col-sm-5 col-8">
-                <img src="{% static 'assets/agenda_6610130.png' %}" class="card-img-top img-thumbnail rounded mx-auto d-block"
-                    style="width: 70%;" alt="...">
+                <img src="{% static 'assets/agenda_6610130.png' %}"
+                    class="card-img-top img-thumbnail rounded mx-auto d-block" style="width: 70%;" alt="...">
                 <div class="card-body container-fluid">
                     <h5>Book Appointmnets</h5>
                     <p class="card-text">Simplify healthcare with easy appointment booking. Seamlessly schedule
@@ -130,8 +132,8 @@
                 </div>
             </div>
             <div class="shadow bg-body-tertiary col-xl-2 col-lg-3 col-md-4 card col-sm-5 col-8">
-                <img src="{% static 'assets/discussion_8319789.png' %}" class="card-img-top img-thumbnail rounded mx-auto d-block"
-                    style="width: 70%;" alt="...">
+                <img src="{% static 'assets/discussion_8319789.png' %}"
+                    class="card-img-top img-thumbnail rounded mx-auto d-block" style="width: 70%;" alt="...">
                 <div class="card-body container-fluid">
                     <h5>Consult Health Professionals Online</h5>
                     <p class="card-text">Connect anytime, anywhere with video consultations. Receive personalized
@@ -139,8 +141,8 @@
                 </div>
             </div>
             <div class="shadow bg-body-tertiary col-xl-2 col-lg-3 col-md-4 card col-sm-5 col-8">
-                <img src="{% static 'assets/herbal_8507106.png' %}" class="card-img-top img-thumbnail rounded mx-auto d-block"
-                    style="width: 70%;" alt="...">
+                <img src="{% static 'assets/herbal_8507106.png' %}"
+                    class="card-img-top img-thumbnail rounded mx-auto d-block" style="width: 70%;" alt="...">
                 <div class="card-body container-fluid">
                     <h5>Diet charts and Precautions</h5>
                     <p class="card-text">Stay ahead with personalized precautions and diet charts. Tailored plans based
@@ -148,8 +150,8 @@
                 </div>
             </div>
             <div class="shadow bg-body-tertiary col-xl-2 col-lg-3 col-md-4 card col-sm-5 col-8">
-                <img src="{% static 'assets/support_8748019.png' %}" class="card-img-top img-thumbnail rounded mx-auto d-block"
-                    style="width: 70%;" alt="...">
+                <img src="{% static 'assets/support_8748019.png' %}"
+                    class="card-img-top img-thumbnail rounded mx-auto d-block" style="width: 70%;" alt="...">
                 <div class="card-body container-fluid ">
                     <h5>Assistant Support</h5>
                     <p class="card-text">Instant support with our AI health chatbot. Get answers to your health queries
@@ -335,16 +337,19 @@
         </div>
     </div>
 
+
+    {% endblock content %}
+
     <!-- footer -->
     <footer class="pb-5  container-fluid" style="background-color: #C4164C; color: white; font-size: 14px;">
         <div class="row mt-4 py-5 px-5">
             <div class="col-lg-3 col-sm-6 container-fluid mb-3">
                 <p class="fw-semibold text-decoration-underline lh-2">HealthGuardian</p>
-                <a class="nav-link active" href="#home">Home</a>
-                <a class="nav-link" href="#features">Features</a>
-                <a class="nav-link" href="#search_doctors">Find Doctors</a>
-                <a class="nav-link" href="#search_hospitals">Find Hospitals</a>
-                <a class="nav-link" href="#contact_us">Contact Us</a>
+                <a class="nav-link " href="{% url 'app_home' %}#home">Home</a>
+                <a class="nav-link " href="{% url 'app_home' %}#features">Features</a>
+                <a class="nav-link " href="{% url 'app_home' %}#search_doctors">Find Doctors</a>
+                <a class="nav-link " href="{% url 'app_home' %}#search_hospitals">Find Hospitals</a>
+                <a class="nav-link " href="{% url 'app_home' %}#contact_us">Contact Us</a>
             </div>
             <div class="col-lg-3 col-sm-6 container-fluid mb-3">
                 <p class="fw-semibold text-decoration-underline lh-2">For Patients</p>
@@ -433,7 +438,6 @@
         document.getElementById("year").textContent = new Date().getFullYear();
 
     </script>
-
 
 </body>
 
