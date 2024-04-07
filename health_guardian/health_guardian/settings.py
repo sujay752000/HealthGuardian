@@ -18,10 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # STATIC_DIR=os.path.join(BASE_DIR,'static')
 # TEMPLATE_DIR = os.path.join(BASE_DIR,'templates')
 
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
+env = environ.Env()
 # Take environment variables from .env file
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
@@ -46,8 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',
     'Predict',
-    'llm_functionality'
+    'llm_functionality',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -66,7 +65,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [BASE_DIR/ 'health_guardian/templates',
-                 BASE_DIR/ 'Predict/templates'],
+                 BASE_DIR/ 'Predict/templates',
+                 BASE_DIR/ 'accounts/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -129,13 +129,28 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS=[BASE_DIR/ 'health_guardian/static',
+                  BASE_DIR/ 'accounts/static',
                   BASE_DIR/ 'Predict/static']
-MEDIA_ROOT=os.path.join(BASE_DIR,'static')
+
+MEDIA_URL = 'media/'
+
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# envrionment variables
+# Google api
 GOOGLE_API_KEY = env('GOOGLE_API_KEY')
+
+# EMAIL SETTINGS
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_PORT = 587
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+
+# Admin default Key
+ADMIN_KEY = env('ADMIN_KEY')
