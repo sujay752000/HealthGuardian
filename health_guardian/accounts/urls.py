@@ -11,13 +11,11 @@ urlpatterns = [
 
     path('patient-signup/', views.patientSignup, name='patient_signup' ),
     path('patient-login/', views.patientLogin, name='patient_login' ),
-    path('patient-dashboard/', views.patientDashboard, name='patient_dashboard' ),
 
+    path('doctor-notapproved/', views.doctorBeforeApproval, name='doctor_notapproved'),
     path('doctor-signup/', views.doctorSignup, name='doctor_signup'),
     path('doctor-login/', views.doctorLogin, name='doctor_login'),
-    path('doctor-dashboard/', views.doctorDashboard, name='doctor_dashboard'),
 
     path('admin-signup/', views.adminSignup, name='admin_signup'),
-    path('admin-login/', views.adminLogin, name='admin_login'),
-    path('admin-dashboard/', views.adminDashboard, name='admin_dashboard')
+    path('admin-login/', views.adminLogin, name='admin_login')
 ]

@@ -1,0 +1,183 @@
+{% extends 'admin-app/admin_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+
+<body>
+    {% block dash-content %}
+
+    <div class="row m-2 mt-3">
+        <h5 class="display-6 text-center mb-3">Doctor Profile</h5>
+        
+        <div class="row d-flex justify-content-evenly align-items-center">
+            <div class="col-lg-3 col-md-4 col-sm-5 col-10" style="width: 250px;">
+                <img class="card-img-top border rounded-pill" src="/media/{{ doctor.photo }}" alt="" srcset="">
+            </div>
+
+            <div class="col-lg-8 col-md-12 col-sm-10 col-12 px-2">
+                <!-- first row -->
+
+                <div class="row d-flex justify-content-evenly align-items-center row-gap-2 my-2">
+
+                    <div class="col-md-5 d-flex justify-content-between align-items-center"">
+                        <div> <i class=" fa-solid fa-user fa-lg" style="color: #032ea5;"></i> </div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" disabled
+                                readonly style="background-color: white;" value="{{ user.first_name }}">
+                            <label for="floatingInput">First Name</label>
+                        </div>
+                    </div>
+    
+    
+                    <div class="col-md-5 d-flex justify-content-between align-items-center">
+                        <div> <i class="fa-solid fa-user fa-lg" style="color: #032ea5;"></i> </div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com"
+                                disabled readonly style="background-color: white;" value="{{ user.last_name }}">
+                            <label for="floatingInput">Last Name</label>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="row d-flex justify-content-evenly align-items-center row-gap-2 my-2">
+
+                    <!-- second row -->
+
+                    <div class="col-md-5 d-flex justify-content-between align-items-center"">
+                        <div> <i class="fa-solid fa-stethoscope fa-lg" style="color: #032ea5;"></i> </div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" disabled
+                                readonly style="background-color: white;" value="{{ doctor.specialization }}">
+                            <label for="floatingInput">Specialisation</label>
+                        </div>
+                    </div>
+    
+    
+                    <div class="col-md-5 d-flex justify-content-between align-items-center">
+                        <div> <i class="fa-solid fa-business-time fa-lg" style="color: #032ea5;"></i> </div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com"
+                                disabled readonly style="background-color: white;" value="{{ doctor.experiance }} yrs">
+                            <label for="floatingInput">Experiance</label>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="row d-flex justify-content-evenly align-items-center row-gap-2 my-2">
+
+                    <!-- Third row -->
+
+                    <div class="col-md-5 d-flex justify-content-between align-items-center"">
+                        <div> <i class="fa-solid fa-indian-rupee-sign fa-lg" style="color: #032ea5;" ></i> </div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" disabled
+                                readonly style="background-color: white;" value="{{ clinic.consultation_fee }} Rs">
+                            <label for="floatingInput">Consultation Fee</label>
+                        </div>
+                    </div>
+    
+    
+                    <div class="col-md-5 d-flex justify-content-between align-items-center">
+                        <div> <i class="fa-solid fa-house-chimney-medical fa-lg " style="color: #032ea5;"></i></div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com"
+                                disabled readonly style="background-color: white;" value="{{ clinic.clinic_name }}">
+                            <label for="floatingInput">Clinic Name</label>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="row d-flex justify-content-evenly align-items-center row-gap-2 my-2">
+
+                    <!-- Fourth row -->
+
+                    <div class="col-md-5 d-flex justify-content-between align-items-center"">
+                        <div> <i class="fa-solid fa-location-dot fa-lg" style="color: #032ea5;" ></i> </div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" disabled
+                                readonly style="background-color: white;" value="{{ clinic.state }}">
+                            <label for="floatingInput">State</label>
+                        </div>
+                    </div>
+    
+    
+                    <div class="col-md-5 d-flex justify-content-between align-items-center">
+                        <div> <i class="fa-solid fa-map-location-dot fa-lg" style="color: #032ea5;" ></i></div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com"
+                                disabled readonly style="background-color: white;" value="{{ clinic.district }}">
+                            <label for="floatingInput">District</label>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+            
+        </div>
+
+        <!-- Clinic Timings -->
+        <div class="row mt-5">
+            <h4 class="h4 mb-2">Clinic Timings</h4>
+            <div class="table-responsive">
+                <table class="table table-success table-striped table-hover">
+                    <thead>
+                        <tr class="text-center">
+                            {% for timing_day in clinic_timings %}
+                            <th scope="col">{{ timing_day.day|title }} </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for timing_day in clinic_timings %}
+                            <td class="text-center">{{ timing_day.start_time|time:"h:i A" }} - {{ timing_day.end_time|time:"h:i A" }}</td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Online Consultation Timings -->
+        <div class="row mt-3">
+            <h4 class="h4 mb-2">Online Consultation Timings</h4>
+            <div class="table-responsive">
+                <table class="table table-success table-striped table-hover">
+                    <thead>
+                        <tr class="text-center">
+                            {% for timing_day in online_timings %}
+                            <th scope="col">{{ timing_day.day|title }} </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for timing_day in online_timings %}
+                            <td class="text-center">{{ timing_day.start_time|time:"h:i A" }} - {{ timing_day.end_time|time:"h:i A" }}</td>
+                            {% endfor %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% endblock dash-content %}
+</body>
+
+</html>

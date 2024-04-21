@@ -72,6 +72,18 @@
                     </div>
 
                     <div class="col-lg-6 col-sm-6 form-floating mb-3"">
+                        <div class="input-group mb-3 d-flex flex-column justify-content-center">
+                            <label class="mt-4 mx-3 input-grou" for="doc_photo">Photo - (jpg)</label>
+                            {% render_field doctor_form.photo class="form-control w-100" id="doc_photo" placeholder="" %}
+                        </div>
+                        {% if doctor_form.photo.errors %}
+                        {% for error in doctor_form.photo.errors  %}
+                        <span><i class="fa-solid fa-circle-info fa-sm" style="color: #8B0000;"></i> {{ error }}</span>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="col-lg-6 col-sm-6 form-floating mb-3"">
                         {% render_field doctor_form.specialization class="form-select" id="doc_specialization" placeholder="" %}
                         <label class="mx-2" for="doc_specialization">specialization </label>
                         {% if doctor_form.specialization.errors %}
@@ -82,9 +94,9 @@
                     </div>
 
                     <div class="col-lg-6 col-sm-6 form-floating mb-3"">
-                        <label class="mt-4 mx-3 input-grou" for="qual_cert">Highest Qualification Certificate</label>
-                        <div class="input-group mb-3">
-                            {% render_field doctor_form.qualification_certificate class="form-control" id="qual_cert" placeholder="" %}
+                        <div class="input-group mb-3 d-flex flex-column justify-content-center">
+                            <label class="mt-4 mx-3 input-grou" for="qual_cert">Highest Qualification Certificate - (file)</label>
+                            {% render_field doctor_form.qualification_certificate class="form-control w-100" id="qual_cert" placeholder="" %}
                         </div>
                         {% if doctor_form.qualification_certificate.errors %}
                         {% for error in doctor_form.qualification_certificate.errors  %}
@@ -104,9 +116,9 @@
                     </div>
 
                     <div class="col-lg-6 col-sm-6 form-floating mb-3"">
-                        <label class="mt-4 mx-3 input-grou" for="doc_resume">Resume / CV</label>
-                        <div class="input-group mb-3">
-                            {% render_field doctor_form.resume class="form-control" id="doc_resume" placeholder="" %}
+                        <div class="input-group mb-3 d-flex flex-column justify-content-center">
+                            <label class="mt-4 mx-3 input-grou" for="doc_resume">Resume / CV - (file)</label>
+                            {% render_field doctor_form.resume class="form-control w-100" id="doc_resume" placeholder="" %}
                         </div>
                         {% if doctor_form.resume.errors %}
                         {% for error in doctor_form.resume.errors  %}

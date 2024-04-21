@@ -24,7 +24,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index_view, name='app_home'),
     path('accounts/', include('accounts.urls')),
+    path('patient/', include('patient.urls')),
+    path('doctor/', include('doctor.urls')),
+    path('admin-user/', include('adminuser.urls')),
     path('predict/', include('Predict.urls')),
     path('llm/', include('llm_functionality.urls')),
+    path('news/', include('news.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

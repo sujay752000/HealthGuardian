@@ -46,6 +46,7 @@
 
             {% if predicted_disease %}
             <h3 class="mt-3">Predicted Disease: {{ predicted_disease }} </h3>
+            <h3 class="mt-3">Accuracy: {{ final_prediction_accuracy }} </h3>
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <a href="{% url 'diet' predicted_disease  %}"> Diet</a>

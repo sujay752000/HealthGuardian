@@ -1,0 +1,81 @@
+{% extends 'doctor-app/doctor_base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- bootstrap css-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- bootstrap js-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    {% block dash-content %}
+
+    <div class="row m-2 mt-1">
+        <h4 class="display-6 text-center">Online Consultation</h4>
+        <p class="text-center mt-2">Dear {{ request.user.get_full_name }},</p>
+        <p class="text-center">Please take a moment to fill out your online consultation schedule so that patients can
+            book appointments with you for virtual consultations. Your availability will enable patients to easily
+            access your expertise and receive timely healthcare advice from the comfort of their own homes. Thank you
+            for your cooperation in providing accessible healthcare services through our platform.</p>
+
+        <form class="row d-flex flex-column justify-content-center align-items-center" method="post"
+            enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {{ formset_management_data }}
+            <h5 class="text-center mb-2 mt-5" style="font-weight: normal;">Day and Timings</h5>
+            <p class="text-center">Leave blank if their is no Consultation !</p>
+
+            {% if online_consultation_form_errors %}
+            <div class="alert alert-danger alert-dismissible fade show d-flex flex-column" role="alert">
+                {% for error in online_consultation_form_errors %}
+                <li> {{ error }} </li>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="row gap-2 d-flex justify-content-evenly row-gap-3">
+                {% for form, weekday in online_consultation_form %}
+                <div class="card shadow py-3 px-2" style="width: 15rem;">
+                    {% for field in form %}
+                    {% if field.name == "start_time" %}
+                    <h5 class="text-center">{{ weekday.1 }} <i class="fa-solid fa-calendar-days fa-sm"></i> </h5>
+                    {% endif %}
+
+                    <div class="form-floating mb-3">
+                        {% render_field field class="form-control" type="time" %}
+                        <label class="fw-medium" for="{{ field.id_for_label }}">{{ field.label }} -24 hr </label>
+                    </div>
+
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+
+
+            <div class="mt-5  col-md-12 d-flex justify-content-center align-items-center">
+                <button type="submit" class="btn shadow rounded fs-5 px-5" style="background-color: #b1f9d1;">Save and
+                    Next</button>
+            </div>
+
+        </form>
+    </div>
+
+
+    {% endblock dash-content %}
+</body>
+
+</html>

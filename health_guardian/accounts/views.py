@@ -14,6 +14,7 @@ from django.contrib.auth.models import User, Group
 from django.db.models.query_utils import Q
 from health_guardian.settings import ADMIN_KEY
 from django.template.loader import render_to_string
+from .models import DoctorProfile
 
 # Create your views here.
 
@@ -30,7 +31,11 @@ def dashboardRedirector(user):
     elif is_patient(user):
         return redirect('patient_dashboard')
     elif is_doctor(user):
-        return redirect('doctor_dashboard')
+        doctor = DoctorProfile.objects.get(user=user.id)
+        if doctor.admin_approved == True:
+            return redirect('doctor_dashboard')
+        else:
+            return  redirect('doctor_notapproved')
     else:
         return redirect('app_home')
 
@@ -92,11 +97,11 @@ def sendAccountPasswordResetEmail(request, user):
 def userPasswordChange(request):
     extended_template = None
     if is_admin(request.user):
-        extended_template = "admin/admin_dashboard.html"
+        extended_template = "admin-app/admin_dashboard.html"
     elif is_patient(request.user):
-        extended_template = "patient/patient_dashboard.html"
+        extended_template = "patient-app/patient_dashboard.html"
     elif is_doctor(request.user):
-        extended_template = "doctor/doctor_dashboard.html"
+        extended_template = "doctor-app/doctor_dashboard.html"
         
     form = UserChangePasswordForm(request.user)
     if request.method == 'POST':
@@ -225,14 +230,6 @@ def patientLogin(request):
     return render(request, 'patient/patient_login.html')
 
 
-@login_required(login_url='patient_login')
-@user_passes_test(is_patient)
-def patientDashboard(request):
-    user = request.user
-    return render(request, 'patient/patient_dashboard.html', {'user': user})
-
-
-
 #########################################################################################################
 ############################################""" Doctor """###############################################
 #########################################################################################################
@@ -288,12 +285,15 @@ def doctorLogin(request):
     return render(request, "doctor/doctor_login.html")
 
 
-
 @login_required(login_url='doctor_login')
 @user_passes_test(is_doctor)
-def doctorDashboard(request):
-    user = request.user
-    return render(request, "doctor/doctor_dashboard.html", {'user': user})
+def doctorBeforeApproval(request):
+    name = request.user.get_full_name
+    messages.success(request, "Your account is under Processing")
+    logout(request)
+    return render(request, "doctor/doctor_before_approval.html", {'name': name})
+
+
 
 
 #########################################################################################################
@@ -342,10 +342,3 @@ def adminLogin(request):
             messages.error(request, "Invalid Credentials")
 
     return render(request, "admin/admin_login.html")
-
-
-@login_required(login_url='admin_login')
-@user_passes_test(is_admin)
-def adminDashboard(request):
-    user = request.user
-    return render(request, "admin/admin_dashboard.html", {'user': user})

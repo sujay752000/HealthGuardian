@@ -28,7 +28,7 @@ class UserRegisterationForm(UserCreationForm):
         last_name = self.cleaned_data.get('last_name')
         if not last_name:
             raise forms.ValidationError("Last name is required")
-        if len(last_name) < 2:
+        if len(last_name) < 1:
             raise forms.ValidationError("Enter a valid name")
         return last_name
     
@@ -56,7 +56,7 @@ class DoctorSignupForm(forms.ModelForm):
 
     class Meta:
         model = DoctorProfile
-        fields = ['specialization', 'qualification_certificate', 'experiance', 'resume']
+        fields = ['specialization', 'photo', 'qualification_certificate', 'experiance', 'resume']
 
     def clean_experiance(self):
         experiance = self.cleaned_data.get('experiance')
