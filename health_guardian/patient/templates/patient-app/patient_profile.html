@@ -1,0 +1,128 @@
+{% extends 'patient-app/patient_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+
+    <!-- bootstrap css-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- bootstrap js-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+    {% block dash-content %}
+    <div class="row m-2 mt-3">
+        <h4 class="display-6 text-center">Complete your profile</h4>
+        <p class="text-center">to get started !</p>
+
+        <form class="row d-flex justify-content-between align-items-center fw-semibold" action="" method="post"
+            enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="col-lg-6 col-sm-6 form-floating mb-4"">
+                <div class="input-group mb-4 d-flex flex-column justify-content-center">
+                    <label class="mt-4 mx-3 input-grou" style="font-weight: normal;" for="patient_photo">Photo - (jpg)</label>
+                    {% render_field form.photo class="form-control w-100" id="patient_photo" placeholder="" %}
+                </div>
+                {% if form.photo.errors %}
+                {% for error in form.photo.errors  %}
+                <span><i class="fa-solid fa-circle-info fa-sm" style="color: #8B0000;"></i> {{ error }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-floating col-lg-6 col-md-6 col-sm-6 mb-4">
+                {% render_field form.address class="form-select" id="address" placeholder="" %}
+                <label class="mx-2" for="address">Address </label>
+                {% if form.address.errors %}
+                {% for error in form.address.errors  %}
+                <span><i class="fa-solid fa-circle-info fa-sm" style="color: #8B0000;"></i> {{ error }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-floating col-lg-6 col-md-6 col-sm-6 mb-4">
+                {% render_field form.age class="form-select" id="Age" placeholder="in yrs" %}
+                <label class="mx-2" for="address">age </label>
+                {% if form.age.errors %}
+                {% for error in form.age.errors  %}
+                <span><i class="fa-solid fa-circle-info fa-sm" style="color: #8B0000;"></i> {{ error }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-floating col-lg-6 col-md-6 col-sm-6 mb-4">
+                {% render_field form.gender class="form-select" id="gender" placeholder="" %}
+                <label class="mx-2" for="gender">Gender </label>
+                {% if form.gender.errors %}
+                {% for error in form.gender.errors  %}
+                <span><i class="fa-solid fa-circle-info fa-sm" style="color: #8B0000;"></i> {{ error }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-floating col-lg-6 col-md-6 col-sm-6 mb-4">
+                {% render_field form.height class="form-select" id="height" placeholder="in cms" %}
+                <label class="mx-2" for="height">Height </label>
+                {% if form.height.errors %}
+                {% for error in form.height.errors  %}
+                <span><i class="fa-solid fa-circle-info fa-sm" style="color: #8B0000;"></i> {{ error }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-floating col-lg-6 col-md-6 col-sm-6 mb-4">
+                {% render_field form.weight class="form-select" id="weight" placeholder="in kgs" %}
+                <label class="mx-2" for="weight">Weight </label>
+                {% if form.weight.errors %}
+                {% for error in form.weight.errors  %}
+                <span><i class="fa-solid fa-circle-info fa-sm" style="color: #8B0000;"></i> {{ error }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-floating col-lg-6 col-md-6 col-sm-6 mb-4">
+                {% render_field form.previous_illness class="form-select" id="previous_illness" placeholder="eg common cold" style="height: 10%;" %}
+                <label class="mx-2" for="previous_illness">Previous illness - if any</label>
+                {% if form.previous_illness.errors %}
+                {% for error in form.previous_illness.errors  %}
+                <span><i class="fa-solid fa-circle-info fa-sm" style="color: #8B0000;"></i> {{ error }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-floating col-lg-6 col-md-6 col-sm-6 mb-4">
+                {% render_field form.chronic_diseases class="form-select" id="chronic_diseases" placeholder="eg diabetes,hypertension" style="height: 10%;" %}
+                <label class="mx-2" for="chronic_diseases">Chronic diseases - if any </label>
+                {% if form.chronic_diseases.errors %}
+                {% for error in form.chronic_diseases.errors  %}
+                <span><i class="fa-solid fa-circle-info fa-sm" style="color: #8B0000;"></i> {{ error }}</span>
+                {% endfor %}
+                {% endif %}
+            </div>
+
+
+            <div class="mt-5  col-md-12 d-flex justify-content-center align-items-center">
+                <button type="submit" class="btn shadow rounded fs-5 px-5"
+                    style="background-color: #b1f9d1;">Submit</button>
+            </div>
+
+        </form>
+
+    </div>
+
+    {% endblock dash-content %}
+
+</body>
+
+</html>

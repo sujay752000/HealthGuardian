@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .header {
+            background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
+        }
+
+        body {
+            font-size: medium;
+        }
+
+        .container {
+            padding: 10px 20px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="header" style="padding: 10px 70px; margin-bottom: 30px;  background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);">
+        <h2 style="text-align: center;">HealthGuardian</h2>
+    </div>
+
+    <div class="container">
+        <h3 style="text-align: center;">Precautions for {{ disease }} </h3>
+
+        <div class="container">
+
+            {{ content | safe}}
+
+        </div>
+
+    </div>
+
+
+
+</body>
+
+</html>

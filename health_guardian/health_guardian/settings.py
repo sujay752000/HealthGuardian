@@ -44,10 +44,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'crispy_forms',
+    'crispy_bootstrap4',
     'Predict',
     'llm_functionality',
-    'accounts'
+    'accounts',
+    'patient',
+    'doctor',
+    'adminuser',
+    'news'
 ]
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -154,3 +162,6 @@ EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 
 # Admin default Key
 ADMIN_KEY = env('ADMIN_KEY')
+
+# News API
+NEWS_API = env('NEWS_API')

@@ -1,0 +1,76 @@
+{% extends 'admin-app/admin_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+
+<body>
+    {% block dash-content %}
+
+    <div class="row m-2 mt-3">
+        <h5 class="display-6 text-center mb-3">Doctor Profile</h5>
+        <div class="row col-sm-12 d-flex justify-content-around align-items-center fw-semibold">
+
+            <div class="bg-body-tertiary col-lg-3 col-md-4 col-sm-5 col-10 d-flex flex-column justify-content-center align-items-center mb-3" style="align-self: flex-start;">
+                <p class="text-center" for="photo_upload" style="font-weight: normal;">Photo</p>
+                {% if doctor.photo %}
+                <img src="/media/{{ doctor.photo }}"
+                    class="card-img-top img-thumbnail rounded rounded-pill mx-auto d-block my-2" alt="...">
+                {% endif %}
+            </div>
+
+            <div class="col-lg-6 col-sm-12 col-12 d-flex flex-column justify-content-center align-items-center card shadow pt-5">
+                
+                <div class="form-floating col-md-12 col-sm-12 col-12 mb-3">
+                    {% for field in user_form %}
+                    <div class="form-floating mb-3">
+                        {% render_field field disabled=True readonly=True class="form-control" style="background-color: white;" %}
+                        <label class="fw-medium" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <div class="card shadow py-3 px-2 mt-3 mb-2 mx-auto" style="width: 50rem;">
+                {% for field in doctor_form %}
+                <div class="form-floating mb-3">
+                    {% render_field field disabled=True readonly=True class="form-control" style="background-color: white;" %}
+                    <label class="fw-medium" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                </div>
+                {% endfor %}
+
+                <div class="form-floating mb-3 py-3 border text-center">
+                    <a class="stretched-link" style="text-decoration: none; color: #032ea5;" href="/media/{{ doctor.resume }}" id="resume">Resume <i class="mx-3 fa-solid fa-download fa-lg" style="color: #032ea5;"></i> </a>
+                    <label class="fw-medium" for="resume"></label>
+                </div>
+                <div class="form-floating mb-3 py-3 border text-center">
+                    <a class="stretched-link" style="text-decoration: none; color: #032ea5;" href="/media/{{ doctor.qualification_certificate }}" id="resume">Qualification Certificate <i class=" mx-3 fa-solid fa-download fa-lg" style="color: #032ea5;"></i> </a>
+                    <label class="fw-medium" for="resume"></label>
+                </div>
+
+            </div>
+
+            <div class="mt-5 mb-4 col-md-12 d-flex justify-content-center align-items-center">
+                <a href="{% url 'admin_doctor_approve' pk=doctor.id %}" class="mx-2 btn shadow rounded fs-5 px-5" style="background-color: #0dcaf0;" > <i class="fa-solid fa-circle-check me-2" style="color: #032ea5;"></i> Approve</a>
+                <a href="{% url 'admin_doctor_reject' pk=doctor.id %}" class="mx-2 btn shadow rounded fs-5 px-5" style="background-color: #adb5bd;"> <i class="fa-solid fa-circle-xmark me-2" style="color: #032ea5;"></i> Reject</a>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    {% endblock dash-content %}
+</body>
+
+</html>

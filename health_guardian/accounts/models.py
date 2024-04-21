@@ -42,10 +42,16 @@ SPECIALIZATIONS = [
 
 class DoctorProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    photo = models.ImageField(upload_to="accounts/doctor_profile_photo/")
     specialization = models.CharField(max_length=200, choices=SPECIALIZATIONS, default='Cardiology')
-    qualification_certificate = models.ImageField(upload_to='accounts/doctor_certificates/')
+    qualification_certificate = models.FileField(upload_to='accounts/doctor_certificates/')
     experiance = models.PositiveSmallIntegerField()
-    resume = models.ImageField(upload_to="accounts/doctor_resumes/")
+    resume = models.FileField(upload_to="accounts/doctor_resumes/")
     admin_approved = models.BooleanField(default=False)
+
+
+
+    def __str__(self) -> str:
+        return f"{self.user.first_name} - {self.specialization}"
 
     

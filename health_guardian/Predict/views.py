@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from sklearn.metrics import accuracy_score
 import numpy as np
 import pandas as pd
 import warnings
 import statistics
 from joblib import load
+
 # Create your views here.
 
 # Load pre-trained models
@@ -16,6 +18,8 @@ final_rf_model = load('D:/Final_Year_Project/health_guardian/Savedmodels/final_r
 encoder = load('D:/Final_Year_Project/health_guardian/Savedmodels/encoder.joblib')
 
 test_data = pd.read_csv("D:/Final_Year_Project/health_guardian/dataset/Testing.csv").dropna(axis=1)
+true_labels = test_data["prognosis"].tolist()
+
 X = test_data.iloc[:,:-1]
 
 symptoms = X.columns.values
@@ -41,6 +45,9 @@ data_dict = {
 # Defining the Function
 # Input: string containing symptoms separated by commas
 # Output: Generated predictions by models
+def calculate_accuracy(true_labels, predicted_labels):
+    return accuracy_score(true_labels, predicted_labels)
+
 
 def predictDisease(symptoms):
     with warnings.catch_warnings():
@@ -92,10 +99,13 @@ def predict_view(request):
             """ Calling the predicting disease function """
             predicted_disease = predictDisease(user_symptoms[0])
 
+            final_prediction_accuracy = calculate_accuracy([true_labels[0]], [predicted_disease]) * 100
+
             # Pass the predicted disease to the template context
             context_symptoms = {
                 'my_list': symptoms,
                 'predicted_disease': predicted_disease,
+                'final_prediction_accuracy': final_prediction_accuracy
             }
             # Pass the symptoms list to the template context
 
@@ -104,3 +114,4 @@ def predict_view(request):
 
     # If the request method is not POST, render the form again
     return render(request, 'disease.html', context=context_symptoms)
+

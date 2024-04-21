@@ -1,0 +1,170 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<!--=== Coding by CodingLab | www.codinglabweb.com === -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!----======== CSS ======== -->
+    <link rel="stylesheet" href="{% static 'css/admin_base.css' %}">
+
+    <!----===== Iconscout CSS ===== -->
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+
+    <!-- bootstrap css-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- bootstrap js-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <style>
+        .dash-content {
+            font-size: medium;
+        }
+    </style>
+
+    <title>Admin Dashboard Panel</title>
+</head>
+
+<body>
+    <nav>
+        <div class="logo-name">
+            <span class="logo_name">HealthGuardian <i class="ms-1 fa-solid fa-sm fa-heart-pulse fa-beat"
+                    style="--fa-animation-duration: 4s !important; color: #ff0000;"></i></span>
+        </div>
+
+        <div class="menu-items">
+            <ul class="nav-links">
+                <li><a href="{% url 'admin_dashboard' %}">
+                        <i class="uil uil-estate"></i>
+                        <span class="link-name">Dahsboard</span>
+                    </a></li>
+                <li><a href="{% url 'admin_doctor_list' %}">
+                        <i class="uil uil-search-alt"></i>
+                        <span class="link-name">Doctors List</span>
+                    </a></li>
+                <li><a href="{% url 'admin_doctor_onhold' %}">
+                        <i class="uil uil-search-alt"></i>
+                        <span class="link-name">Doctors On hold</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-chart"></i>
+                        <span class="link-name">Manage Patients</span>
+                    </a></li>
+                <li><a href="#">
+                        <i class="uil uil-comments"></i>
+                        <span class="link-name">Manage Appointments</span>
+                    </a></li>
+            </ul>
+
+            <ul class="logout-mode">
+                <li><a href="{% url 'user_change_password' %}">
+                        <i class="uil uil-key-skeleton"></i>
+                        <span class="link-name">Change Password</span>
+                    </a></li>
+
+                <li><a href="{% url 'logout' %}">
+                        <i class="uil uil-signout"></i>
+                        <span class="link-name">Logout</span>
+                    </a></li>
+
+                <li class="mode">
+
+                    <div class="mode-toggle">
+                        <!-- <span class="switch"></span> -->
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+
+            <div class="search-box">
+                <div class="inner_logo_name">HealthGuardian</div>
+                <!-- <i class="uil uil-search"></i> -->
+                <!-- <input type="text" placeholder="Search here..."> -->
+            </div>
+
+            <div class="dropdown-center">
+
+            </div>
+        </div>
+
+        <div class="dash-content">
+            <div class="row d-flex justify-content-center align-items-center mt-2">
+                <div class="col-md-6">
+                    {% if messages %}
+                    {% for msg in messages %}
+                    {% if msg.tags == 'success' %}
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Congratualations! : </strong> {{ msg }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% elif msg.tags == 'error' %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Sorry! : </strong> {{ msg }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            {% block dash-content %}
+            {% endblock dash-content %}
+        </div>
+    </section>
+
+
+    <!-- count of patient, doctor, doctor oh hold -->
+    <script>
+        function animateCount(elementId, targetCount, incrementSpeed) {
+            var element = document.getElementById(elementId);
+            var currentCount = 0;
+            var interval = setInterval(function() {
+                if (currentCount >= targetCount) {
+                    clearInterval(interval);
+                    element.textContent = targetCount;
+                } else {
+                    element.textContent = currentCount;
+                    currentCount++;
+                }
+            }, incrementSpeed);
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var doctorCountElement = document.getElementById('doctorCount');
+            var doctorCount = parseInt(doctorCountElement.textContent);
+            animateCount('doctorCount', doctorCount, 50);
+
+            var doctorOnHoldCountElement = document.getElementById('doctorOnHoldCount');
+            var doctorOnHoldCount = parseInt(doctorOnHoldCountElement.textContent);
+            animateCount('doctorOnHoldCount', doctorOnHoldCount, 50);
+
+            var patientCountElement = document.getElementById('patientCount');
+            var patientCount = parseInt(patientCountElement.textContent);
+            animateCount('patientCount', patientCount, 50);
+        });
+    </script>
+
+
+    <script src="{% static 'js/admin_base.js' %}"></script>
+
+    <!-- font awesome -->
+    <script src="https://kit.fontawesome.com/33cd46dea5.js" crossorigin="anonymous"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+{% extends 'admin-app/admin_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+
+<body>
+    {% block dash-content %}
+
+    <div class="row m-2 mt-3">
+        <h5 class="display-6 text-center mb-3">Doctors On Hold</h5>
+
+        {% if page_obj %}
+
+        <form method="GET" class="mx-auto my-3 col-md-6 col-sm-8 col-11">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search by doctor's name" name="doctor_name" value="{{ name }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+        
+        <div class="table-responsive">
+            <table class="table table-success table-striped table-hover">
+                <thead>
+                    <tr class="text-center">
+                        <th scope="col">SL No</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Specialization</th>
+                        <th scope="col">Total Experience</th>
+                        <th scope="col">View Profile</th>
+                        <th scope="col">Approve</th>
+                        <th scope="col">Reject</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doctor in page_obj %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ doctor.user.get_full_name }}</td>
+                        <td>{{ doctor.specialization }}</td>
+                        <td>{{ doctor.experiance }}</td>
+                        <td><a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" style="color: black;" href="{% url 'admin_doctor_view' pk=doctor.id %}"><i class="fa-solid fa-id-card fa-lg me-2" style="color: #032ea5;"></i> View </a></td>
+                        <td><a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" style="color: black;" href="{% url 'admin_doctor_approve' pk=doctor.id %}"><i class="fa-solid fa-circle-check fa-lg me-2" style="color: #032ea5;"></i> Approve </a></td>
+                        <td><a class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover" style="color: black;" href="{% url 'admin_doctor_reject' pk=doctor.id %}"><i class="fa-solid fa-circle-xmark fa-lg me-2" style="color: #032ea5;"></i> Reject </a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <span class="step-links mx-auto">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+        
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+
+        {% else %}
+
+        <div class="row d-flex justify-content-center align-items-center">
+            <h4 class="text-center"> No Results found !</h4>
+            <img class="col-md-6 col-sm-10 col-12" src="{% static 'patient_image_assets/no_search_results.jpg' %}" alt="">
+        </div>
+
+
+
+        {% endif %}
+
+
+
+    </div>
+
+
+    {% endblock dash-content %}
+</body>
+
+</html>
