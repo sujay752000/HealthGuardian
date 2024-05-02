@@ -79,6 +79,9 @@ def predictDisease(symptoms):
             "svm_model_prediction": svm_prediction,
             "final_prediction": final_prediction
         }
+
+    print(predictions)
+
     return predictions["final_prediction"]
 
 # providing input symptoms

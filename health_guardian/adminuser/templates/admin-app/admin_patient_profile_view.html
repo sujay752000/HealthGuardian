@@ -1,0 +1,168 @@
+{% extends 'admin-app/admin_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    
+    {% block css %}
+    <style>
+        #patient > .link-name{
+            color: #032ea5 !important;
+        }
+    </style>
+    {% endblock css %}
+    
+    <title>Document</title>
+    
+</head>
+
+<body>
+    {% block dash-content %}
+
+    <div class="row m-2 mt-3">
+        <h5 class="display-6 text-center mb-3">Patient Profile</h5>
+        
+        <div class="row d-flex justify-content-evenly align-items-center">
+            <div class="col-lg-3 col-md-4 col-sm-5 col-10" style="width: 250px;">
+                <img class="card-img-top border rounded-pill" src="/media/{{ patient.photo }}" alt="" srcset="">
+            </div>
+
+            <div class="col-lg-8 col-md-12 col-sm-10 col-12 px-2">
+                <!-- first row -->
+
+                <div class="row d-flex justify-content-evenly align-items-center row-gap-2 my-2">
+
+                    <div class="col-md-5 d-flex justify-content-between align-items-center"">
+                        <div> <i class=" fa-solid fa-user fa-lg" style="color: #032ea5;"></i> </div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" disabled
+                                readonly style="background-color: white;" value="{{ user.first_name }}">
+                            <label for="floatingInput">First Name</label>
+                        </div>
+                    </div>
+    
+    
+                    <div class="col-md-5 d-flex justify-content-between align-items-center">
+                        <div> <i class="fa-solid fa-user fa-lg" style="color: #032ea5;"></i> </div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com"
+                                disabled readonly style="background-color: white;" value="{{ user.last_name }}">
+                            <label for="floatingInput">Last Name</label>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="row d-flex justify-content-evenly align-items-center row-gap-2 my-2">
+
+                    <!-- second row -->
+
+                    <div class="col-md-5 d-flex justify-content-between align-items-center"">
+                        <div> <i class="fa-solid fa-envelope fa-lg" style="color: #032ea5;"></i> </div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com" disabled
+                                readonly style="background-color: white; font-size: smaller;" value="{{ user.email }}">
+                            <label for="floatingInput">Email</label>
+                        </div>
+                    </div>
+    
+    
+                    <div class="col-md-5 d-flex justify-content-between align-items-center">
+                        <div> <i class="fa-solid fa-clock fa-lg" style="color: #032ea5;"></i> </div>
+                        <div class="form-floating mb-3" style="width: 90%;">
+                            <input type="text" class="form-control" id="floatingInput" placeholder="name@example.com"
+                                disabled readonly style="background-color: white;" value="{{ user.date_joined }}">
+                            <label for="floatingInput">Date Joined</label>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="row d-flex justify-content-evenly align-items-center row-gap-2 my-2">
+
+                    <!-- Third row -->
+
+                    <div class="col-md-10 d-flex justify-content-between align-items-center">
+                        <div> <i class="fa-solid fa-location-dot fa-lg" style="color: #032ea5;"></i> </div>
+                        <div class="form-floating mb-3" style="width: 100%;">
+                            <textarea name="" id="floatingInput" disabled readonly style="background-color: white; text-align: center; width: 100%;">{{ patient.address }}</textarea>
+                        </div>
+                    </div>
+    
+
+            </div>
+            
+        </div>
+
+        {% if page_obj  %}
+
+        <!-- Appointmnet Booking History -->
+        <div class="row mt-5">
+            <h5 class="my-3">Appointment Booking History </h5>
+            <div class="table-responsive">
+                <table class="table table-sm table-success table-striped table-hover">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">SL No</th>
+                            <th scope="col">Doctor</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Appointment Type</th>
+                            <th scope="col">Payment Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in page_obj %}
+                        <tr class="text-center">
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ patient.doctor }}</td>
+                            <td>{{ patient.date }}</td>
+                            <td>{{ patient.get_appointment_type_display }}</td>
+                            <td>{{ patient.get_payment_status_display }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="pagination">
+            <span class="step-links mx-auto">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+        
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+
+        {% else %}
+
+        <div class="row d-flex justify-content-center align-items-center">
+            <h4 class="text-center"> No Results found !</h4>
+            <img class="col-md-6 col-sm-10 col-12" src="{% static 'patient_image_assets/no_search_results.jpg' %}" alt="">
+        </div>
+
+
+
+        {% endif %}
+
+    </div>
+
+    {% endblock dash-content %}
+</body>
+
+</html>

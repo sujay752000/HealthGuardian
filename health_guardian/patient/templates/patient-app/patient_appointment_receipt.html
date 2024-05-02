@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Booking Receipt</title>
+    <style>
+        /* Style the table */
+        table {
+            -pdf-keep-with-next: true;
+        }
+
+        p,
+        td {
+            margin: 0;
+            -pdf-keep-with-next: true;
+        }
+
+        p.separator {
+            -pdf-keep-with-next: false;
+            font-size: 6pt;
+        }
+
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        tr {
+            padding: 10px 5px;
+        }
+
+        /* Style table header */
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+            background-color: #f2f2f2;
+        }
+
+        /* Style table data */
+        td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+            /* Allow text to wrap onto multiple lines */
+            white-space: normal;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        /* Style table header title */
+        h1,
+        h4 {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Heading title -->
+    <h1>HealthGuardian </h1>
+    <h4>Appointment Booking Receipt</h4>
+
+    <!-- Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Doctor Name</th>
+                <th>Patient Name</th>
+                <th>Date</th>
+                <th>Time Slot</th>
+                <th>Payment</th>
+                <th>Transaction ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ booking_id }}</td>
+                <td>{{ doctor_name }}</td>
+                <td>{{ patient_name }}</td>
+                <td>{{ date }}</td>
+                <td>{{ time }}</td>
+                <td>{{ amount }} - Confirmed</td>
+                <td>{{ transaction_id }}</td>
+            </tr>
+            <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+</body>
+
+</html>
+

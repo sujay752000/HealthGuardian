@@ -1,6 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from accounts.models import DoctorProfile
-from doctor.models import ClinicDetails
 from django.db.models import Q
 from django.core.paginator import Paginator
 
@@ -40,3 +39,4 @@ def index_view(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, "index.html", {"page_obj": page_obj})
+

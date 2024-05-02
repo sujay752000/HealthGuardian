@@ -29,6 +29,10 @@
     <div class="row m-2 mt-2">
         <h5 class="display-6 text-center mb-3">Book Appointment </h5>
 
+        <h6 class="mt-3">Book your medical appointment with Dr {{ doctor_name }} </h6>
+
+        <p>You can schedule appointments for in-clinic visits as well as online consultations.</p>
+
         <div class="row d-flex justify-content-around align-items-center">
 
             <div class="card mb-5 shadow mx-3" style="width: 16rem;">
@@ -44,7 +48,7 @@
                     {% else %}
                         <p class="card-text mb-3" style="margin-bottom: 50px !important;">{{ date }} - No Consultation</p>
                     {% endif %}
-                    <a class="p-3 bg-primary text-white rounded-pill container-fluid" style="text-decoration: none;" href="#">Book Appointment</a>
+                    <a class="p-3 bg-primary text-white rounded-pill container-fluid" style="text-decoration: none;" href="{% url 'patient_clinic_appointment_date' doctor_id=doctor patient_id=patient %}">Book Appointment</a>
                 </div>
             </div>
 
@@ -61,10 +65,12 @@
                     {% else %}
                         <p class="card-text mb-3" style="margin-bottom: 50px !important;">{{ date }} - No Consultation</p>
                     {% endif %}
-                    <a class="p-3 bg-primary text-white rounded-pill container-fluid" style="text-decoration: none;" href="#">Book Appointment</a>
+                    <a class="p-3 bg-primary text-white rounded-pill container-fluid" style="text-decoration: none;" href="{% url 'patient_online_appointment_date' doctor_id=doctor patient_id=patient %}">Book Appointment</a>
                 </div>
             </div>
         </div>
+
+        
 
 
 
@@ -72,8 +78,6 @@
 
 
     {% endblock dash-content %}
-    
-
 </body>
 
 </html>

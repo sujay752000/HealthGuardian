@@ -24,6 +24,11 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
+    <!-- predict -->
+    <link rel="stylesheet" type="text/css" href="{% static 'predict_css/virtual-select.min.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'predict_css/predict.css' %}">
+
     <style>
         .dash-content {
             font-size: medium;
@@ -37,6 +42,10 @@
         
     </style>
 
+    {% block css %}
+
+    {% endblock css %}
+
     <title>Admin Dashboard Panel</title>
 </head>
 
@@ -49,31 +58,40 @@
 
         <div class="menu-items">
             <ul class="nav-links">
-                <li><a href="{% url 'doctor_dashboard' %}">
-                        <i class="uil uil-estate"></i>
+
+                <li><a id="dash" href="{% url 'doctor_dashboard' %}">
+                        <i class="fa-solid fa-house fa-sm"  style="color: #032ea5;"></i>
                         <span class="link-name">Dahsboard</span>
                     </a></li>
-                <li><a href="{% url 'doctor_timings_update' %}">
-                        <i class="uil uil-search-alt"></i>
+                <li><a id="predict" href="{% url 'doctor_disease_predict' %}">
+                        <i class="fa-solid fa-virus" style="color: #032ea5;"></i>
+                        <span class="link-name">Predict Disease</span>
+                    </a></li>
+                <li><a id="schedule" href="{% url 'doctor_timings_update' %}">
+                        <i class="fa-solid fa-calendar-days v" style="color: #032ea5;"></i>
                         <span class="link-name">Schedule Consultation Timings</span>
                     </a></li>
-                <li><a href="#">
-                        <i class="uil uil-search-alt"></i>
-                        <span class="link-name">Appointments</span>
+                <li><a id="clinic" href="{% url 'doctor_clinical_appointments' %}">
+                        <i class="fa-solid fa-hospital fa-sm" style="color: #032ea5;"></i>
+                        <span class="link-name">Clinical Appointments</span>
                     </a></li>
-                <li><a href="#">
-                        <i class="uil uil-comments"></i>
+                <li><a id="online" href="{% url 'doctor_online_appointments' %}">
+                        <i class="fa-solid fa-comments fa-sm" style="color: #032ea5;"></i>
                         <span class="link-name">Online Consultation</span>
                     </a></li>
-                <li><a href="#">
-                        <i class="uil uil-robot"></i>
+                <li><a id="diet" href="{% url 'doctor_diet_precautions' %}">
+                        <i class="fa-solid fa-utensils fa-sm" style="color: #032ea5;"></i>
+                        <span class="link-name">Diet Chart and Precautions</span>
+                    </a></li>
+                <li><a id="assistant" href="{% url 'doctor_chat_assistant' %}">
+                    <i class="fa-solid fa-robot fa-sm" style="color: #032ea5;"></i>
                         <span class="link-name">AI assistant</span>
                     </a></li>
             </ul>
 
             <ul class="logout-mode">
                 <li><a href="{% url 'logout' %}">
-                        <i class="uil uil-signout"></i>
+                        <i class="fa-solid fa-right-from-bracket" style="color: #032ea5;"></i>
                         <span class="link-name">Logout</span>
                     </a></li>
 
@@ -152,6 +170,37 @@
 
     <!-- font awesome -->
     <script src="https://kit.fontawesome.com/33cd46dea5.js" crossorigin="anonymous"></script>
+
+    {% block js %}
+    {% endblock js %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const responseElement = document.getElementById('response-2');
+            const responseText = responseElement.textContent.trim();
+            const words = responseText.split(/\s+/); // Split by whitespace
+            responseElement.textContent = ''; // Clear the content
+
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < words.length) {
+                    responseElement.textContent += words[i] + ' ';
+                    i++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 100); // Adjust the interval duration (in milliseconds) as needed
+        });
+    </script>
+
+    <!-- predict js -->
+    <script type="text/javascript" src="{% static 'predict_js/virtual-select.min.js' %}"></script>
+    <script type="text/javascript">
+        VirtualSelect.init({
+            ele: '#multi_option'
+        });
+
+    </script>
 
 </body>
 

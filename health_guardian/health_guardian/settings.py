@@ -52,7 +52,9 @@ INSTALLED_APPS = [
     'patient',
     'doctor',
     'adminuser',
-    'news'
+    'news',
+    'django_extensions',
+    'videocall'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -165,3 +167,12 @@ ADMIN_KEY = env('ADMIN_KEY')
 
 # News API
 NEWS_API = env('NEWS_API')
+
+# Razorpay payment gateway
+RAZORPAY_KEY_ID = env('RAZORPAY_KEY_ID')
+RAZORPAY_KEY_SECRET = env('RAZORPAY_KEY_SECRET')
+
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}

@@ -5,5 +5,6 @@ from . import views
 
 urlpatterns = [
     path('diet/<str:disease>', views.generate_diet, name='diet'),
-    path('precaution/<str:disease>', views.generate_precaution, name='precaution')
+    path('precaution/<str:disease>', views.generate_precaution, name='precaution'),
+    path('chat-response', views.chatAssistantResponse, name='chat_response')
 ]
