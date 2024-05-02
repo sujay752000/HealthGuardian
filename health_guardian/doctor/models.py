@@ -52,3 +52,14 @@ class DoctorOffDays(models.Model):
         return f"{self.doctor} - {self.date}"
 
 
+
+class DoctorPredictedDisease(models.Model):
+    doctor = models.ForeignKey(DoctorProfile, on_delete=models.CASCADE)
+    symptoms = models.CharField(max_length=2000)
+    model = models.CharField(max_length=100)
+    disease = models.CharField(max_length=500)
+    date = models.DateField(auto_now=True)
+
+
+    def __str__(self) -> str:
+        return f"{self.doctor} - {self.disease}"

@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from accounts.views import is_admin, is_patient, is_doctor
 from accounts.forms import UserRegisterationForm
 from .forms import PatientProfileForm, PatientUpdateProfileForm, PatientUserUpdateForm
-from .models import PatientProfile, PatientPredictedDisease
+from .models import PatientProfile, PatientPredictedDisease, PatientBookedAppointment, OnlineConsultationPassKeys
 from llm_functionality.views import generateHealthTip, generateAboutDisease, generate_diet, generate_precaution
 from doctor.models import DoctorProfile, ClinicAppointmnetTimings, ClinicDetails, OnlineConsultationTimings, DoctorOffDays
 from django.core.paginator import Paginator
@@ -16,14 +16,35 @@ from health_guardian.settings import EMAIL_HOST_USER
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from datetime import date
+import datetime
+import calendar
+from django.utils import timezone
+import json
+import razorpay
+from django.views.decorators.csrf import csrf_exempt
+import random
+import string
 
 
-
+# pdf
 from io import BytesIO
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 import os
+
+# Razorpay
+from health_guardian.settings import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
+
+# Pass Key Generator
+def generate_passkey():
+    num_count = 3
+    passkey = ''.join(random.choices(string.ascii_letters, k=3) + random.choices(string.digits, k=num_count))
+    passkey += ''.join(random.choices(string.ascii_letters + string.digits, k=3 - num_count))
+    passkey_list = list(passkey)
+    random.shuffle(passkey_list)
+    return ''.join(passkey_list)
+
 
 # Create your views here.
 
@@ -32,6 +53,14 @@ def render_to_pdf(template_src, context_dict={}):
     html = template.render(context_dict)
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    if not pdf.err:
+        return result.getvalue()
+    return None
+
+
+def render_to_pdf_2(html_content):
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html_content.encode("UTF-8")), result)
     if not pdf.err:
         return result.getvalue()
     return None
@@ -345,8 +374,10 @@ def patientPrecaution(request, disease):
 @user_passes_test(is_patient)
 @user_passes_test(profile_completed, login_url="patient_profile")
 def patientBookAppointmentView(request, doctor):
+    user = request.user
+    patient = PatientProfile.objects.get(patient=user)
+
     doctor = DoctorProfile.objects.get(id=doctor)
-    clinic = ClinicDetails.objects.get(doctor=doctor)
     date_today = date.today()
 
     off_day = DoctorOffDays.objects.filter(date=date_today)
@@ -364,6 +395,9 @@ def patientBookAppointmentView(request, doctor):
 
     details = {
         'date' : date_today,
+        'doctor' : doctor.id,
+        'patient' : patient.id,
+        'doctor_name': doctor.user.get_full_name(),
         'clinic_start_time' : clinic_start_time,
         'clinic_end_time': clinic_end_time,
         'online_start_time' : online_start_time,
@@ -372,5 +406,616 @@ def patientBookAppointmentView(request, doctor):
     }
 
     return render(request, "patient-app/patient_book_appointment_view.html", context=details)
+
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientClinicBookAppointmeentDate(request, doctor_id, patient_id):
+
+    doctor = DoctorProfile.objects.get(id=doctor_id)
+    patient = PatientProfile.objects.get(id=patient_id)
+
+    clinic = ClinicDetails.objects.get(doctor=doctor)
+    clinic_timings = ClinicAppointmnetTimings.objects.filter(doctor=doctor)
+
+    off_days = DoctorOffDays.objects.filter(doctor=doctor).values_list('date', flat=True)
+    formatted_off_days = [date.strftime('%Y-%m-%d') for date in off_days]
+
+    # Fetch weekdays without start or end times
+    weekdays_without_timings = ClinicAppointmnetTimings.objects.filter(doctor=doctor, start_time__isnull=True).values_list('day', flat=True)
+
+    # Capitalize the weekdays
+    formatted_weekdays_without_timings = [day.capitalize() for day in weekdays_without_timings]
+
+    details = {
+        'doctor': doctor,
+        'clinic': clinic,
+        'clinic_timings': clinic_timings,
+        'off_days': json.dumps(formatted_off_days),
+        'weekdays_without_timings':  json.dumps(formatted_weekdays_without_timings)
+    }
+
+    if request.method == 'POST':
+        user_date = request.POST.get('booked_date')
+        user_date = datetime.datetime.strptime(user_date, '%m/%d/%Y').date() 
+
+        print(user_date)
+        print(user_date.strftime('%Y-%m-%d'))
+        print(user_date.strftime('%A'))
+
+        if user_date not in formatted_off_days and calendar.day_name[user_date.weekday()].capitalize() not in formatted_weekdays_without_timings:
+            messages.success(request, f"Selected date {user_date}, please select your comfortable time slot")
+            return redirect("patient_clinic_appointment_time", doctor_id=doctor_id, patient_id=patient_id, date=user_date)
+        else:
+            messages.error(request, "Inavlid details")
+            return render(request, "patient-app/patient_clinic_appointment.html", context=details)
+
+    return render(request, "patient-app/patient_clinic_appointment.html", context=details)
+
+
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientOnlineBookAppointmeentDate(request, doctor_id, patient_id):
+
+    doctor = DoctorProfile.objects.get(id=doctor_id)
+    patient = PatientProfile.objects.get(id=patient_id)
+
+    online_timings = OnlineConsultationTimings.objects.filter(doctor=doctor)
+
+    off_days = DoctorOffDays.objects.filter(doctor=doctor).values_list('date', flat=True)
+    formatted_off_days = [date.strftime('%Y-%m-%d') for date in off_days]
+
+    # Fetch weekdays without start or end times
+    weekdays_without_timings = OnlineConsultationTimings.objects.filter(doctor=doctor, start_time__isnull=True).values_list('day', flat=True)
+
+    # Capitalize the weekdays
+    formatted_weekdays_without_timings = [day.capitalize() for day in weekdays_without_timings]
+
+    details = {
+        'doctor': doctor,
+        'online_timings': online_timings,
+        'off_days': json.dumps(formatted_off_days),
+        'weekdays_without_timings':  json.dumps(formatted_weekdays_without_timings)
+    }
+
+    if request.method == 'POST':
+        user_date = request.POST.get('booked_date')
+        user_date = datetime.datetime.strptime(user_date, '%m/%d/%Y').date() 
+
+        print(user_date)
+        print(user_date.strftime('%Y-%m-%d'))
+        print(user_date.strftime('%A'))
+
+        print(formatted_off_days)
+        print(formatted_weekdays_without_timings)
+
+        if user_date not in formatted_off_days and calendar.day_name[user_date.weekday()].capitalize() not in formatted_weekdays_without_timings:
+            print("True")
+            messages.success(request, f"Selected date {user_date}, please select your comfortable time slot")
+            return redirect("patient_online_appointment_time", doctor_id=doctor_id, patient_id=patient_id, date=user_date)
+        else:
+            messages.error(request, "Inavlid details")
+            return render(request, "patient-app/patient_online_appointment.html", context=details)
+
+    return render(request, "patient-app/patient_online_appointment.html", context=details)
+
+
+
+
+razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+print(razorpay_client)
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientClinicBookAppointmentTime(request, doctor_id, patient_id, date):
+    try:
+        user = request.user
+        doctor = DoctorProfile.objects.get(id=doctor_id)
+        patient = PatientProfile.objects.get(id=patient_id)
+        user_date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
+        print(user_date)
+        clinic_timings = ClinicAppointmnetTimings.objects.filter(doctor=doctor)
+        clinic = ClinicDetails.objects.get(doctor=doctor)
+        doctor_consulting_fee = clinic.consultation_fee
+        off_days = DoctorOffDays.objects.filter(doctor=doctor).values_list('date', flat=True)
+        formatted_off_days = [date.strftime('%Y-%m-%d') for date in off_days]
+
+        weekdays_without_timings = ClinicAppointmnetTimings.objects.filter(doctor=doctor, start_time__isnull=True).values_list('day', flat=True)
+        formatted_weekdays_without_timings = [day.capitalize() for day in weekdays_without_timings]
+
+        current_date = datetime.date.today()
+        print(formatted_off_days)
+        print(formatted_weekdays_without_timings)
+        print(user_date >= current_date)
+
+        if user_date not in formatted_off_days and calendar.day_name[user_date.weekday()].capitalize() not in formatted_weekdays_without_timings and user_date >= current_date:
+            # Get the day of the week from the user_date
+            user_day = calendar.day_name[user_date.weekday()]
+
+            # Get clinic timings for the user_day
+            clinic_timings_day = clinic_timings.filter(day=user_day.lower())
+
+            # Calculate time slots
+            # Calculate time slots
+            time_slots = []
+            for timing in clinic_timings_day:
+                if user_date == current_date:
+                    now = datetime.datetime.now().time()
+                    start_time = max(timing.start_time, now)
+                else:
+                    start_time = timing.start_time
+
+                end_time = timing.end_time
+                current_time = datetime.datetime.combine(datetime.datetime.now().date(), start_time)
+
+                while current_time.time() < end_time:
+                    time_slots.append(current_time.time().strftime('%I:%M %p'))
+                    current_time += datetime.timedelta(hours=1)
+
+            print(time_slots)
+
+            if time_slots:
+
+                details = {
+                    'user': user,
+                    'date': user_date,
+                    'day': user_day,
+                    'doctor': doctor,
+                    'clinic': clinic,
+                    'time_slots': time_slots,
+                    'clinic_timings': clinic_timings,
+                }
+
+                if request.method == 'POST':
+                    user_time = request.POST.get('time_booked')
+
+                    if user_time:
+                        time = datetime.datetime.now()
+                        booking_obj = PatientBookedAppointment(doctor=doctor, patient=patient, appointment_type=1, date=user_date, time=user_time, consulting_fee=doctor_consulting_fee)
+                        booking_id = f"BOOKBY{user.id}-{doctor.id}-{time.strftime('%H:%M:%S')}"
+                        booking_obj.booking_id = booking_id
+                        booking_obj.save()
+
+                        order_currency = 'INR'
+
+                        protocol = 'http'
+
+                        if request.is_secure():
+                            protocol = 'https'
+                        else:
+                            protocol = 'http'
+
+                        callback_url = protocol + "://" + str(get_current_site(request))+"/patient/patient-payment-handler"
+                        print(callback_url)
+
+                        print(callback_url)
+                        notes = {'order-type': "Consultation Fee"}
+                        try:
+                            razorpay_order = razorpay_client.order.create(dict(amount=doctor_consulting_fee*100, currency=order_currency, notes = notes, payment_capture='0'))
+                            print(razorpay_order['id'])
+                            booking_obj.razorpay_order_id = razorpay_order['id']
+                            booking_obj.save()
+
+                            details2 = {
+                                'time_slot': user_time,
+                                'order_id': razorpay_order['id'],
+                                'orderId':booking_obj.booking_id,
+                                'final_price':doctor_consulting_fee * 100,
+                                'razorpay_merchant_id':RAZORPAY_KEY_ID,
+                                'callback_url':callback_url
+                            }
+
+                            details.update(details2)
+
+                            messages.success(request, "Please confirm your appointment")
+                            return render(request, "patient-app/patient_appointment_confirm.html", context=details )
+                        
+                        except Exception as e:
+                            print("Razorpay Error:", e)
+                            return HttpResponse("Razorpay Error: " + str(e))
+                            
+                    else:
+                        messages.error(request, "Please Select any time slot")
+                        return render(request, "patient-app/patient_clinic_appointment_time.html", context=details)
+
+
+                return render(request, "patient-app/patient_clinic_appointment_time.html", context=details)
+            else:
+                messages.error(request, f"No time slotes are available for {user_date} ")
+                return redirect("patient_clinic_appointment_date", doctor_id=doctor_id, patient_id=patient_id)
+        else:
+            messages.error(request, "Invalid Booking Details")
+            return redirect("patient_doctor_search")
+    except:
+        messages.error(request, "Invalid Booking Details")
+        return redirect("patient_doctor_search")
+
+
+
+###########################################################################################################
+################################################# Online Appointmnet ######################################### 
+###########################################################################################################
+
+
+razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientOnlineBookAppointmentTime(request, doctor_id, patient_id, date):
+    try:
+        user = request.user
+        doctor = DoctorProfile.objects.get(id=doctor_id)
+        patient = PatientProfile.objects.get(id=patient_id)
+        user_date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
+        online_timings = OnlineConsultationTimings.objects.filter(doctor=doctor)
+        clinic = ClinicDetails.objects.get(doctor=doctor)
+        doctor_consulting_fee = clinic.consultation_fee
+        off_days = DoctorOffDays.objects.filter(doctor=doctor).values_list('date', flat=True)
+        formatted_off_days = [date.strftime('%Y-%m-%d') for date in off_days]
+
+        weekdays_without_timings = OnlineConsultationTimings.objects.filter(doctor=doctor, start_time__isnull=True).values_list('day', flat=True)
+        formatted_weekdays_without_timings = [day.capitalize() for day in weekdays_without_timings]
+
+        current_date = datetime.date.today()
+
+        if user_date not in formatted_off_days and calendar.day_name[user_date.weekday()].capitalize() not in formatted_weekdays_without_timings and user_date >= current_date:
+            # Get the day of the week from the user_date
+            user_day = calendar.day_name[user_date.weekday()]
+
+            # Get clinic timings for the user_day
+            online_timings_day = online_timings.filter(day=user_day.lower())
+
+            # Calculate time slots
+            # Calculate time slots
+            time_slots = []
+            for timing in online_timings_day:
+                if user_date == current_date:
+                    now = datetime.datetime.now().time()
+                    start_time = max(timing.start_time, now)
+                else:
+                    start_time = timing.start_time
+
+                end_time = timing.end_time
+                current_time = datetime.datetime.combine(datetime.datetime.now().date(), start_time)
+
+                while current_time.time() < end_time:
+                    time_slots.append(current_time.time().strftime('%I:%M %p'))
+                    current_time += datetime.timedelta(hours=1)
+
+            print(time_slots)
+
+            if time_slots:
+
+                details = {
+                    'user': user,
+                    'date': user_date,
+                    'day': user_day,
+                    'doctor': doctor,
+                    'clinic': clinic,
+                    'time_slots': time_slots,
+                    'online_timings': online_timings,
+                }
+
+                if request.method == 'POST':
+                    user_time = request.POST.get('time_booked')
+
+                    if user_time:
+                        time = datetime.datetime.now()
+                        booking_obj = PatientBookedAppointment(doctor=doctor, patient=patient, appointment_type=2, date=user_date, time=user_time, consulting_fee=doctor_consulting_fee)
+                        booking_id = f"BOOKBY{user.id}-{doctor.id}-{time.strftime('%H:%M:%S')}"
+                        booking_obj.booking_id = booking_id
+                        booking_obj.save()
+
+                        order_currency = 'INR'
+
+                        protocol = 'http'
+
+                        if request.is_secure():
+                            protocol = 'https'
+                        else:
+                            protocol = 'http'
+
+                        callback_url = protocol + "://" + str(get_current_site(request))+"/patient/patient-payment-handler"
+                        # callback_url = 'http://'+ str(get_current_site(request))
+                        print(callback_url)
+                        notes = {'order-type': "Consultation Fee"}
+                        try:
+                            razorpay_order = razorpay_client.order.create(dict(amount=doctor_consulting_fee*100, currency=order_currency, notes = notes, payment_capture='0'))
+                            print(razorpay_order['id'])
+                            booking_obj.razorpay_order_id = razorpay_order['id']
+                            booking_obj.save()
+
+                            pass_key = generate_passkey()
+                            online_pass_key_obj = OnlineConsultationPassKeys(booking_instance=booking_obj, doctor=booking_obj.doctor, patient=booking_obj.patient, pass_key=pass_key)
+                            online_pass_key_obj.save()
+
+                            details2 = {
+                                'time_slot': user_time,
+                                'order_id': razorpay_order['id'],
+                                'orderId':booking_obj.booking_id,
+                                'final_price':doctor_consulting_fee * 100,
+                                'razorpay_merchant_id':RAZORPAY_KEY_ID,
+                                'callback_url':callback_url
+                            }
+
+                            details.update(details2)
+
+                            messages.success(request, "Please confirm your appointment")
+                            return render(request, "patient-app/patient_appointment_confirm.html", context=details )
+                        
+                        except Exception as e:
+                            print("Razorpay Error:", e)
+                            return HttpResponse("Razorpay Error: " + str(e))
+                            
+                    else:
+                        messages.error(request, "Please Select any time slot")
+                        return render(request, "patient-app/patient_online_appointment_time.html", context=details)
+
+
+                return render(request, "patient-app/patient_online_appointment_time.html", context=details)
+            else:
+                messages.error(request, f"No time slotes are available for {user_date} ")
+                return redirect("patient_online_appointment_date", doctor_id=doctor_id, patient_id=patient_id)
+        else:
+            messages.error(request, "Invalid Booking Details")
+            return redirect("patient_doctor_search")
+    except:
+        messages.error(request, "Invalid Booking Details")
+        return redirect("patient_doctor_search")
+
+
+
+
+###########################################################################################################
+razorpay_client_2 = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+@csrf_exempt
+def patientPaymentHandleRequest(request):
+    if request.method == "POST":
+        try:
+            payment_id = request.POST.get('razorpay_payment_id', '')
+            order_id = request.POST.get('razorpay_order_id','')
+            signature = request.POST.get('razorpay_signature','')
+            params_dict = {
+                'razorpay_order_id': order_id, 
+                'razorpay_payment_id': payment_id,
+                'razorpay_signature': signature
+            }
+            try:
+                booking_db = PatientBookedAppointment.objects.get(razorpay_order_id=order_id)
+            except:
+                return HttpResponse("505 Not Found")
+            
+            booking_db.razorpay_payment_id = payment_id
+            booking_db.razorpay_signature = signature
+            booking_db.save()
+            result = razorpay_client_2.utility.verify_payment_signature(params_dict)
+            print(result)
+            if result==True:
+                amount = booking_db.consulting_fee * 100   #we have to pass in paisa
+                try:
+                    razorpay_client_2.payment.capture(payment_id, amount)
+                    booking_db.payment_status = 1
+                    booking_db.save()
+
+                    data = {
+                        'booking_id': booking_db.booking_id,
+                        'transaction_id': booking_db.razorpay_payment_id,
+                        'date': str(booking_db.date),
+                        'time': str(booking_db.time),
+                        'doctor_name': booking_db.doctor.user.get_full_name(),
+                        'patient_name': booking_db.patient.patient.get_full_name(),
+                        'amount': booking_db.consulting_fee,
+                        'domain' : get_current_site(request).domain,
+                        'protocol': 'https' if request.is_secure() else 'http',
+                    }
+
+                    pass_key = ""
+
+                    if booking_db.appointment_type == 2:
+                        pass_key_obj = OnlineConsultationPassKeys.objects.get(booking_instance=booking_db)
+                        pass_key = pass_key_obj.pass_key
+                        data.update({'pass_key' : pass_key})
+
+
+                    html_content = render_to_string("patient-app/patient_appointment_success_receipt_email.html", data)
+
+                    pdf = render_to_pdf("patient-app/patient_appointment_receipt.html", data)
+
+                    print("Done-1")
+
+                    if pdf:
+                        patient_email = booking_db.patient.patient.email
+                        filename = f"Invoice_{booking_db.booking_id}.pdf"
+                        Subject = f"Appointment Receipt - Booking id : {booking_db.booking_id}"
+                        message = html_content
+                        email = EmailMessage(subject=Subject, body=message, from_email=EMAIL_HOST_USER, to=[patient_email])
+                        email.attach(filename, pdf, 'application/pdf')
+                        email.content_subtype = 'html' 
+                        email.send(fail_silently=True)
+                        print("Done-2")
+
+                    messages.success(request, "Payment successfull appointment receipt has been sent to your email.")
+                    print("Done-3")
+                    if booking_db.appointment_type == 1:
+                        return redirect("patient_clinic_consultations")
+                    else:
+                        return redirect("patient_online_consultations")
+                        
+
+                except Exception as e:
+                    booking_db.payment_status = 2
+                    booking_db.save()
+
+                    patient_email = booking_db.patient.patient.email
+                    Subject = f"Appointment Booking Failed !"
+                    data = {
+                        'patient_name': booking_db.patient.patient.get_full_name(),
+                        'domain' : get_current_site(request).domain,
+                        'protocol': 'https' if request.is_secure() else 'http'
+                    }
+                    message = render_to_string("patient-app/patient_appointment_fail_email.html", context=data)
+                    email = EmailMessage(subject=Subject, body=message, from_email=EMAIL_HOST_USER, to=[patient_email])
+                    email.content_subtype = 'html' 
+                    email.send(fail_silently=True)
+
+                    booking_db.delete()
+                    messages.error(request, "Payment failed try booking again.")
+                    return redirect("patient_doctor_search")
+            else:
+                booking_db.payment_status = 2
+                booking_db.save()
+
+                patient_email = booking_db.patient.patient.email
+                Subject = f"Appointment Booking Failed !"
+                data = {
+                    'patient_name': booking_db.patient.patient.get_full_name(),
+                    'domain' : get_current_site(request).domain,
+                    'protocol': 'https' if request.is_secure() else 'http'
+                }
+                message = render_to_string("patient-app/patient_appointment_fail_email.html", context=data)
+                email = EmailMessage(subject=Subject, body=message, from_email=EMAIL_HOST_USER, to=[patient_email])
+                email.content_subtype = 'html' 
+                email.send(fail_silently=True)
+
+                booking_db.delete()
+
+                messages.error(request, "Payment failed try booking again.")
+                return redirect("patient_doctor_search")
+            
+        except:
+            messages.error(request, "Payment failed try booking again.")
+            return redirect("patient_doctor_search")
+
+
+
+###################################################################################################################
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientOnlineConsultationTable(request):
+    user = request.user
+    patient = PatientProfile.objects.get(patient=user)
+    doctor_name = request.GET.get('doctor_name')
+    if doctor_name:
+        consultation_list = PatientBookedAppointment.objects.filter(
+            patient=patient,
+            appointment_type=2,
+            payment_status=1,
+            doctor__user__first_name__icontains=doctor_name  # Corrected filtering
+        ).order_by('-date', '-id').all()
+    else:
+        consultation_list = PatientBookedAppointment.objects.filter(
+            patient=patient,
+            appointment_type=2,
+            payment_status=1,
+        ).order_by('-date', '-id').all()
+
+    paginator = Paginator(consultation_list, 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, "patient-app/patient_consultation_table.html", {"page_obj": page_obj})
+
+
+###########################################################################################################
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientClinicConsultationTable(request):
+    user = request.user
+    patient = PatientProfile.objects.get(patient=user)
+    doctor_name = request.GET.get('doctor_name')
+    if doctor_name:
+        consultation_list = PatientBookedAppointment.objects.filter(
+            patient=patient,
+            appointment_type=1,
+            payment_status=1,
+            doctor__user__first_name__icontains=doctor_name 
+        ).order_by('-date', '-id').all()
+    else:
+        consultation_list = PatientBookedAppointment.objects.filter(
+            patient=patient,
+            appointment_type=1,
+            payment_status=1,
+        ).order_by('-date', '-id').all()
+
+    paginator = Paginator(consultation_list, 5)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, "patient-app/patient_clinic_consultation_table.html", {"page_obj": page_obj})
+
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientVideoCallView(request):
+    return render(request, "patient-app/patient_video_call_view.html")
+
+
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientVideoCall(request):
+    name = request.user.get_full_name()
+    return render(request, 'patient-app/patient_video_call.html', {'name': name})
+
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientJoinCall(request, booking_id, doctor_id, patient_id):
+    pass_key_obj = get_object_or_404(OnlineConsultationPassKeys, booking_instance=booking_id, doctor=doctor_id, patient=patient_id )
+    pass_key = pass_key_obj.pass_key
+    if request.method == 'POST':
+        roomID = request.POST['roomID']
+        if roomID == pass_key:
+            protocol = 'http'
+            if request.is_secure():
+                protocol = 'https'
+            else:
+                protocol = 'http'
+
+            url_join = protocol + "://" + str(get_current_site(request)) + f"/videochat/videocall?roomID={roomID}&booking_id={booking_id}&doctor_id={doctor_id}&patient_id={patient_id}"
+
+            return redirect(url_join)
+        else:
+            messages.error(request, "Invalid Pass Key")
+    return render(request, 'patient-app/patient_join_video_call.html', {'pass_key': pass_key})
+
+
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientChatAssistant(request):
+    protocol = 'http'
+    if request.is_secure():
+        protocol = 'https'
+    else:
+        protocol = 'http'
+    url_chat_response =  protocol + "://" + str(get_current_site(request)) + f"/llm/chat-response?prompt="
+    return render(request, "patient-app/patient_chat_assistant.html", {'url_chat_response': url_chat_response})
+
+
 
 

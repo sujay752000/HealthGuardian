@@ -1,0 +1,159 @@
+{% extends 'patient-app/patient_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+
+    {% block css %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: small !important;
+        }
+
+        .chat-container {
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+
+        .chat-header {
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .chat-box {
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .message {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .message.received {
+            width: 100%;
+            text-align: left;
+            background-color: #f2f2f2;
+        }
+
+        .message.sent {
+            width: 100%;
+            text-align: right;
+            background-color: #e2f2ff;
+        }
+
+        .chat-input {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            width: 95%;
+        }
+
+        button {
+            padding: 15px 0px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        #assistant > .link-name{
+            color: #032ea5 !important;
+        }
+    </style>
+    {% endblock css %}
+
+
+
+</head>
+
+<body>
+
+    {% block dash-content %}
+
+    <div class="row m-2" style="font-size: small !important; margin-top: -20px;">
+        <h5 class="display-6 text-center mb-3">Health ChatBot</h5>
+
+        <div class="chat-container card shadow" style="width: 95%;">
+            <div class="chat-box" id="chat-box">
+                <div class="message received">Hello! How can I assist you today?</div>
+            </div>
+            <div class="chat-input container-fluid">
+                <input type="text" id="user-input" placeholder="Type your message..." class="form-control">
+                <button class="btn btn-success px-5 ms-4" id="send-btn">Send <i class="fa-solid fa-paper-plane"></i> </button>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+    {% endblock dash-content %}
+
+
+    {% block js %}
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var sendBtn = document.getElementById("send-btn");
+            var userInput = document.getElementById("user-input");
+            var chatBox = document.getElementById("chat-box");
+            sendBtn.addEventListener("click", function () {
+                var message = userInput.value.trim();
+                if (message !== "") {
+                    appendMessage(message, "sent");
+                    userInput.value = "";
+                    scrollToBottom();
+                    $.ajax({
+                        url: "{{ url_chat_response }}" + message,
+                        type: 'GET',
+                        dataType: 'json', // added data type
+                        success: function (res) {
+                            // console.log(res);
+                            // alert(res);
+                            appendMessage(res.message, "received");
+                        }
+                    });
+                }
+            });
+
+            function appendMessage(message, type) {
+                var messageElement = document.createElement("div");
+                messageElement.classList.add("message", type);
+                messageElement.innerText = message;
+                chatBox.appendChild(messageElement);
+            }
+
+            function scrollToBottom() {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+
+    </script>
+    {% endblock js %}
+
+
+</body>
+
+</html>

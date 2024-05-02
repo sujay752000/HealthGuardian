@@ -5,48 +5,37 @@ from django.contrib.auth.models import User
 
 
 SPECIALIZATIONS = [
-    ('Cardiology', 'Cardiology'),
-    ('Neurology', 'Neurology'),
     ('Dermatology', 'Dermatology'),
-    ('Orthopedics', 'Orthopedics'),
-    ('Ophthalmology', 'Ophthalmology'),
-    ('Pediatrics', 'Pediatrics'),
-    ('Oncology', 'Oncology'),
-    ('Gynecology', 'Gynecology'),
-    ('Urology', 'Urology'),
-    ('Endocrinology', 'Endocrinology'),
-    ('Gastroenterology', 'Gastroenterology'),
-    ('Hematology', 'Hematology'),
-    ('Nephrology', 'Nephrology'),
-    ('Pulmonology', 'Pulmonology'),
-    ('Rheumatology', 'Rheumatology'),
     ('Allergy and Immunology', 'Allergy and Immunology'),
-    ('Anesthesiology', 'Anesthesiology'),
-    ('Diagnostic Radiology', 'Diagnostic Radiology'),
-    ('Emergency Medicine', 'Emergency Medicine'),
-    ('Family Medicine', 'Family Medicine'),
+    ('Gastroenterology', 'Gastroenterology'),
+    ('Hepatology', 'Hepatology'),
+    ('Pharmacology', 'Pharmacology'),
+    ('Pulmonology', 'Pulmonology'),
+    ('Cardiology', 'Cardiology'),
+    ('Endocrinology', 'Endocrinology'),
+    ('Neurology', 'Neurology'),
+    ('Orthopedics', 'Orthopedics'),
     ('Internal Medicine', 'Internal Medicine'),
-    ('Medical Genetics', 'Medical Genetics'),
-    ('Nuclear Medicine', 'Nuclear Medicine'),
-    ('Obstetrics and Gynecology', 'Obstetrics and Gynecology'),
-    ('Pathology', 'Pathology'),
-    ('Physical Medicine and Rehabilitation', 'Physical Medicine and Rehabilitation'),
-    ('Preventive Medicine', 'Preventive Medicine'),
-    ('Psychiatry', 'Psychiatry'),
-    ('Radiation Oncology', 'Radiation Oncology'),
-    ('Surgery', 'Surgery'),
-    ('Thoracic Surgery', 'Thoracic Surgery'),
+    ('Vascular Medicine', 'Vascular Medicine'),
+    ('Rheumatology', 'Rheumatology'),
     ('Urology', 'Urology'),
-    ('Vascular Surgery', 'Vascular Surgery'),
+    ('Physician', 'Physician'),
+    ('Pediatrician', 'Pediatrician'),
+    ('Gynecology', 'Gynecology'),
+    ('Ophthalmology', 'Ophthalmology'),
+    ('Otolaryngology', 'Otolaryngology'),
+    ('General Surgery', 'General Surgery'),
+    ('Oncology', 'Oncology')
 ]
+
 
 class DoctorProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to="accounts/doctor_profile_photo/")
+    photo = models.ImageField(upload_to="accounts/doctor_profile_photo/", default="accounts/doctor_profile_photo/profile_photo_default.jpg")
     specialization = models.CharField(max_length=200, choices=SPECIALIZATIONS, default='Cardiology')
-    qualification_certificate = models.FileField(upload_to='accounts/doctor_certificates/')
+    qualification_certificate = models.FileField(upload_to='accounts/doctor_certificates/', default='accounts/doctor_certificates/Qualification_certificate_Ju9LGcp.docx')
     experiance = models.PositiveSmallIntegerField()
-    resume = models.FileField(upload_to="accounts/doctor_resumes/")
+    resume = models.FileField(upload_to="accounts/doctor_resumes/", default="accounts/doctor_resumes/resume_bhBPuNm.docx")
     admin_approved = models.BooleanField(default=False)
 
 
@@ -54,4 +43,3 @@ class DoctorProfile(models.Model):
     def __str__(self) -> str:
         return f"{self.user.first_name} - {self.specialization}"
 
-    

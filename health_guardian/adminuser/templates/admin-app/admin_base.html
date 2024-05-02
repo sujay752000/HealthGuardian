@@ -30,6 +30,9 @@
         }
     </style>
 
+    {% block css %}
+    {% endblock css %}
+
     <title>Admin Dashboard Panel</title>
 </head>
 
@@ -42,36 +45,40 @@
 
         <div class="menu-items">
             <ul class="nav-links">
-                <li><a href="{% url 'admin_dashboard' %}">
-                        <i class="uil uil-estate"></i>
+                <li><a id="dash" href="{% url 'admin_dashboard' %}">
+                    <i class="fa-solid fa-house fa-sm"  style="color: #032ea5;"></i>
                         <span class="link-name">Dahsboard</span>
                     </a></li>
-                <li><a href="{% url 'admin_doctor_list' %}">
-                        <i class="uil uil-search-alt"></i>
-                        <span class="link-name">Doctors List</span>
-                    </a></li>
-                <li><a href="{% url 'admin_doctor_onhold' %}">
-                        <i class="uil uil-search-alt"></i>
+                <li><a id="onhold" href="{% url 'admin_doctor_onhold' %}">
+                    <i class="fa-solid fa-hospital-user" style="color: #032ea5;"></i>
                         <span class="link-name">Doctors On hold</span>
                     </a></li>
-                <li><a href="#">
-                        <i class="uil uil-chart"></i>
+                <li><a id="approved" href="{% url 'admin_doctor_list' %}">
+                    <i class="fa-solid fa-user-doctor" style="color: #032ea5;"></i>
+                        <span class="link-name">Manage Doctors</span>
+                    </a></li>
+                <li><a id="patient" href="{% url 'admin_patient_list' %}">
+                    <i class="fa-solid fa-user-plus" style="color: #032ea5;"></i>
                         <span class="link-name">Manage Patients</span>
                     </a></li>
-                <li><a href="#">
-                        <i class="uil uil-comments"></i>
-                        <span class="link-name">Manage Appointments</span>
+                <li><a id="online" href="{% url 'admin_online_appointments' %}">
+                    <i class="fa-solid fa-calendar-check" style="color: #032ea5;"></i>
+                        <span class="link-name">Manage Online Appointments</span>
+                    </a></li>
+                <li><a id="clinic" href="{% url 'admin_clinic_appointments' %}">
+                    <i class="fa-solid fa-calendar-check" style="color: #032ea5;"></i>
+                        <span class="link-name">Manage Clinic Appointments</span>
                     </a></li>
             </ul>
 
             <ul class="logout-mode">
                 <li><a href="{% url 'user_change_password' %}">
-                        <i class="uil uil-key-skeleton"></i>
+                    <i class="fa-solid fa-key" style="color: #032ea5;"></i>
                         <span class="link-name">Change Password</span>
                     </a></li>
 
                 <li><a href="{% url 'logout' %}">
-                        <i class="uil uil-signout"></i>
+                    <i class="fa-solid fa-right-from-bracket" style="color: #032ea5;"></i>
                         <span class="link-name">Logout</span>
                     </a></li>
 

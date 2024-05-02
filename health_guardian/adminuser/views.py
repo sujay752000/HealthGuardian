@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from accounts.views import is_admin, is_patient, is_doctor
 from accounts.models import DoctorProfile
-from patient.models import PatientProfile
+from patient.models import PatientProfile, PatientBookedAppointment
 from django.core.mail import EmailMessage
 from health_guardian.settings import EMAIL_HOST_USER
 from django.template.loader import render_to_string
@@ -140,4 +140,110 @@ def adminDoctorProfile(request, pk):
     }
 
     return render(request, "admin-app/admin_doctor_profile_view.html", context=details)
+
+
+
+
+@login_required(login_url='admin_login')
+@user_passes_test(is_admin)
+def adminPatientList(request):
+    name = request.GET.get('patient_name')
+    if name:
+        patients = PatientProfile.objects.filter((Q(patient__first_name__icontains=name) | Q(patient__last_name__icontains=name))).order_by('-patient__date_joined')
+    else:
+        patients = PatientProfile.objects.all().order_by('-patient__date_joined')
+
+    paginator = Paginator(patients, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, "admin-app/admin_patient_list.html", {"page_obj": page_obj})
+
+
+
+@login_required(login_url='admin_login')
+@user_passes_test(is_admin)
+def adminPatientProfile(request, pk):
+    patient = get_object_or_404(PatientProfile, id=pk)
+    user = patient.patient
+    patient_bookings = PatientBookedAppointment.objects.filter(patient=patient).order_by('-date').all()
+
+    paginator = Paginator(patient_bookings, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    details = {
+        'user': user,
+        'patient': patient,
+        'page_obj': page_obj
+    }
+
+    return render(request, "admin-app/admin_patient_profile_view.html", context=details)
+
+
+
+
+@login_required(login_url='admin_login')
+@user_passes_test(is_admin)
+def adminPatientRemove(request, pk):
+    patient_profile = get_object_or_404(PatientProfile, id=pk)
+    patient = patient_profile.patient
+    patient_name = patient.get_full_name()
+    patient.delete()
+
+    messages.success(request, f"Removed patient {patient_name}")
+
+    return redirect("admin_patient_list")
+
+
+
+@login_required(login_url='admin_login')
+@user_passes_test(is_admin)
+def adminClinicAppointmentList(request):
+    user_booking_id = request.GET.get('booking_id')
+    if user_booking_id:
+        bookings = PatientBookedAppointment.objects.filter(Q(booking_id__icontains=user_booking_id), appointment_type=1, payment_status=1).order_by('-date').all()
+    else:
+        bookings = PatientBookedAppointment.objects.filter(appointment_type=1, payment_status=1).order_by('-date')
+
+    paginator = Paginator(bookings, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, "admin-app/admin_clinic_appointments_list.html", {"page_obj": page_obj})
+
+
+
+@login_required(login_url='admin_login')
+@user_passes_test(is_admin)
+def adminAppointmentRemove(request, pk, booking_id):
+    booking = get_object_or_404(PatientBookedAppointment, id=pk, booking_id=booking_id)
+    if booking:
+        booking_id_deleted = booking.booking_id
+        booking.delete()
+        messages.success(request, f"Successfully removed appointment booking id : {booking_id_deleted}")
+        if booking.appointment_type == 1:
+            return redirect("admin_clinic_appointments")
+        else:
+            return redirect("admin_online_appointments")
+    else:
+        messages.error(request, "Invalid Appointment Details")
+        if booking.appointment_type == 1:
+            return redirect("admin_clinic_appointments")
+        else:
+            return redirect("admin_online_appointments")
+
+
+@login_required(login_url='admin_login')
+@user_passes_test(is_admin)
+def adminOnlineAppointmentList(request):
+    user_booking_id = request.GET.get('booking_id')
+    if user_booking_id:
+        bookings = PatientBookedAppointment.objects.filter(Q(booking_id__icontains=user_booking_id), appointment_type=2, payment_status=1).order_by('-date').all()
+    else:
+        bookings = PatientBookedAppointment.objects.filter(appointment_type=2, payment_status=1).order_by('-date')
+
+    paginator = Paginator(bookings, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, "admin-app/admin_online_appointments_list.html", {"page_obj": page_obj})
+
 

@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from health_guardian.settings import GOOGLE_API_KEY
 from Predict.views import predict_view
 import textwrap
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -47,6 +48,37 @@ def generate_precaution(disease, chronic_disease, bmi):
     return html_content
 
 
+def chatAssistantResponse(request):
+    model = genai.GenerativeModel('gemini-pro')
+    response = model.generate_content(f"{request.GET.get('prompt')}")
+    return JsonResponse({'message': response.text.replace("*", "")})
 
 
+
+def generate_diet_doctor(disease):
+    model = genai.GenerativeModel('gemini-pro')
+    # Generate content using the model
+
+    response = model.generate_content(f"Develop a comprehensive dietary regimen for an individual grappling with {disease}, emphasizing nutrition tailored to manage symptoms and promote overall health. Consider the total number of daily meals, their corresponding calorie values, and specify the recommended water intake. Additionally, incorporate essential minerals and vitamins suited to support the individual's nutritional needs. Ensure the plan is both effective and safe by accounting for any dietary restrictions or preferences.")
     
+    # Convert generated text to Markdown
+    # Convert Markdown to HTML
+    html_content = markdown2.markdown(response.text)
+
+    return html_content
+
+
+
+def generate_precaution_doctor(disease):
+    model = genai.GenerativeModel('gemini-pro')
+    # Generate content using the model
+
+    response = model.generate_content(f"Develop a set of precautionary measures tailored for individuals vulnerable to {disease}, focusing on lifestyle adjustments, exercise routines, and hygiene practices to minimize the risk of contracting or exacerbating the specified disease. Outline preventive actions aimed at maintaining overall health and reducing exposure to potential health risks. Incorporate guidelines for managing stress levels and boosting immune function. Additionally, provide information on regular screenings, vaccinations, and consultations with healthcare professionals to monitor and address any emerging health concerns effectively.")
+    
+    # Convert generated text to Markdown
+    # Convert Markdown to HTML
+    html_content = markdown2.markdown(response.text)
+
+    return html_content
+
+

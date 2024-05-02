@@ -30,5 +30,7 @@ urlpatterns = [
     path('predict/', include('Predict.urls')),
     path('llm/', include('llm_functionality.urls')),
     path('news/', include('news.urls')),
+    path('videochat/', include('videocall.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 

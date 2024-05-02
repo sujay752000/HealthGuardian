@@ -1,0 +1,105 @@
+{% extends 'doctor-app/doctor_base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block css %}
+    <style>
+        #patient_name :hover{
+            color: blueviolet !important;
+        }
+
+        #clinic > .link-name{
+            color: #032ea5 !important;
+        }
+    </style>
+    {% endblock css %}
+</head>
+
+<body>
+
+    {% block dash-content %}
+
+    <div class="row m-2 mt-2">
+        <h5 class="display-6 text-center mb-3">Clinic Consultation</h5>
+
+        <h4 class="mt-3 mb-2">Booked Appointments</h4>
+        {% if page_obj %}
+
+        <form method="GET" class="mx-auto my-3 col-md-6 col-sm-8 col-11">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search by doctor name" name="doctor_name" value=''>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+        
+        <div class="table-responsive">
+            <table class="table table-sm table-success table-striped table-hover">
+                <thead>
+                    <tr class="text-center">
+                        <th scope="col">SL No</th>
+                        <th scope="col">Booking ID</th>
+                        <th scope="col">Patient</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Time Slot</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for consultation in page_obj %}
+                    <tr class="text-center">
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ consultation.booking_id }}</td>
+                        <td id="patient_name"><a href="{% url 'doctor_patient_profile' pk=consultation.patient.id %}" style="text-decoration: none; color: black;">{{ consultation.patient }} </a> </td>
+                        <td>{{ consultation.date }}</td>
+                        <td>{{ consultation.time }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination">
+            <span class="step-links mx-auto">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+        
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+        
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+
+        {% else %}
+
+        <div class="row d-flex justify-content-center align-items-center">
+            <h4 class="text-center"> No Results found !</h4>
+            <img class="col-md-6 col-sm-10 col-12" src="{% static 'patient_image_assets/no_search_results.jpg' %}" alt="">
+        </div>
+
+
+
+        {% endif %}
+
+
+
+    </div>
+
+
+
+    {% endblock dash-content %}
+    
+
+</body>
+
+</html>

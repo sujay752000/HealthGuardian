@@ -28,6 +28,18 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
+
+    
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+    {% block css %}
+    {% endblock css %}
+
+
+
     <style>
         .dash-content {
             font-size: medium;
@@ -53,39 +65,39 @@
 
         <div class="menu-items">
             <ul class="nav-links">
-                <li><a href="{% url 'patient_dashboard' %}">
-                        <i class="uil uil-estate"></i>
+                <li><a id="dash" href="{% url 'patient_dashboard' %}">
+                    <i class="fa-solid fa-house fa-sm"  style="color: #032ea5;"></i>
                         <span class="link-name">Dahsboard</span>
                     </a></li>
-                <li><a href="{% url 'patient_predict_disease' %}">
-                        <i class="uil uil-search-alt"></i>
+                <li><a id="predict" href="{% url 'patient_predict_disease' %}">
+                    <i class="fa-solid fa-virus" style="color: #032ea5;"></i>
                         <span class="link-name">Predict Disease</span>
                     </a></li>
-                <li><a href="{% url 'patient_doctor_search' %}">
-                        <i class="uil uil-chart"></i>
+                <li><a id="search_doc" href="{% url 'patient_doctor_search' %}">
+                    <i class="fa-solid fa-magnifying-glass-plus" style="color: #032ea5;"></i>
                         <span class="link-name">Search Doctors and Book Appointments</span>
                     </a></li>
-                <li><a href="#">
-                        <i class="uil uil-comments"></i>
+                <li><a id="online" href="{% url 'patient_online_consultations' %}">
+                    <i class="fa-solid fa-comments fa-sm" style="color: #032ea5;"></i>
                         <span class="link-name">Online Consultation</span>
                     </a></li>
-                <li><a href="#">
-                        <i class="uil uil-thumbs-up"></i>
+                <li><a id="clinic" href="{% url 'patient_clinic_consultations' %}">
+                    <i class="fa-solid fa-hospital fa-sm" style="color: #032ea5;"></i>
                         <span class="link-name">Clinic Appointments</span>
                     </a></li>
-                <li><a href="{% url 'patient_diet_precautions' %}">
-                        <i class="uil uil-utensils-alt"></i>
+                <li><a id="diet" href="{% url 'patient_diet_precautions' %}">
+                    <i class="fa-solid fa-utensils fa-sm" style="color: #032ea5;"></i>
                         <span class="link-name">Diet Chart and Precautions</span>
                     </a></li>
-                <li><a href="#">
-                        <i class="uil uil-robot"></i>
+                <li><a id="assistant" href="{% url 'patient_chat_assistant' %}">
+                    <i class="fa-solid fa-robot fa-sm" style="color: #032ea5;"></i>
                         <span class="link-name">AI assistant</span>
                     </a></li>
             </ul>
 
             <ul class="logout-mode">
                 <li><a href="{% url 'logout' %}">
-                        <i class="uil uil-signout"></i>
+                    <i class="fa-solid fa-right-from-bracket" style="color: #032ea5;"></i>
                         <span class="link-name">Logout</span>
                     </a></li>
 
@@ -202,6 +214,10 @@
         });
 
     </script>
+
+    {% block js %}
+    {% endblock js %}
 </body>
 
 </html>
+
