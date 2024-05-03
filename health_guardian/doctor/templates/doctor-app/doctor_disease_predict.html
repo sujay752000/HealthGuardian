@@ -59,8 +59,10 @@
             {% if predicted_disease %}
             <p id="" class="mt-5 text-center"> Predicted Disease: <span id="response" class="fs-5 fw-semibold"> {{ predicted_disease }} </span> <i class="fa-solid fa-virus-covid" style="color: #032ea5;"></i> </p>
             <div class="row d-flex justify-content-center align-items-center my-2">
+                {% if about_disease %}
                 <h5 class="col-md-3">About Disease :</h5>
                 <p id="response-2" class="response-2 col-md-8">{{ about_disease | safe }}</p>
+                {% endif %}
             </div>
             {% endif %}
         </form>

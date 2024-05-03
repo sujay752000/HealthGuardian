@@ -7,6 +7,7 @@ import warnings
 import statistics
 from joblib import load
 
+
 # Create your views here.
 
 # Load pre-trained models
@@ -117,4 +118,5 @@ def predict_view(request):
 
     # If the request method is not POST, render the form again
     return render(request, 'disease.html', context=context_symptoms)
+
 

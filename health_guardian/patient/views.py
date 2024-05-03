@@ -48,6 +48,52 @@ def generate_passkey():
 
 # Create your views here.
 
+disease_specializations = {
+    'Fungal infection': 'Dermatology',
+    'Allergy': 'Allergy and Immunology',
+    'GERD': 'Gastroenterology',
+    'Chronic cholestasis': 'Hepatology',
+    'Drug Reaction': 'Pharmacology',
+    'Peptic ulcer disease': 'Gastroenterology',
+    'AIDS': 'Internal Medicine',
+    'Diabetes': 'Endocrinology',
+    'Gastroenteritis': 'Gastroenterology',
+    'Bronchial Asthma': 'Pulmonology',
+    'Hypertension': 'Cardiology',
+    'Migraine': 'Neurology',
+    'Cervical spondylosis': 'Orthopedics',
+    'Paralysis (brain hemorrhage)': 'Neurology',
+    'Jaundice': 'Hepatology',
+    'Malaria': 'Physician',
+    'Chicken pox': 'Physician',
+    'Dengue': 'Physician',
+    'Typhoid': 'Physician',
+    'Hepatitis A': 'Hepatology',
+    'Hepatitis B': 'Hepatology',
+    'Hepatitis C': 'Hepatology',
+    'Hepatitis D': 'Hepatology',
+    'Hepatitis E': 'Hepatology',
+    'Alcoholic hepatitis': 'Hepatology',
+    'Tuberculosis': 'Pulmonology',
+    'Common Cold': 'Internal Medicine',
+    'Pneumonia': 'Pulmonology',
+    'Dimorphic hemmorhoids(piles)': 'Gastroenterology',
+    'Heart attack': 'Cardiology',
+    'Varicose veins': 'Vascular Medicine',
+    'Hypothyroidism': 'Endocrinology',
+    'Hyperthyroidism': 'Endocrinology',
+    'Hypoglycemia': 'Endocrinology',
+    'Osteoarthristis': 'Rheumatology',
+    'Arthritis': 'Rheumatology',
+    '(vertigo) Paroymsal Positional Vertigo': 'Neurology',
+    'Acne': 'Dermatology',
+    'Urinary tract infection': 'Urology',
+    'Psoriasis': 'Dermatology',
+    'Impetigo': 'Dermatology'
+}
+
+
+
 def render_to_pdf(template_src, context_dict={}):
     template = get_template(template_src)
     html = template.render(context_dict)
@@ -75,6 +121,7 @@ def profile_not_completed(user):
     patient = PatientProfile.objects.filter(patient=user)
     if not patient:
         return True
+
 
 
 def calculate_bmi(height_cm, weight_kg):
@@ -138,6 +185,19 @@ def patientDiseasePredict(request):
 
             about_disease = generateAboutDisease(predicted_disease)
 
+            specialization = disease_specializations.get(predicted_disease)
+            print(specialization)
+
+            doctors = []
+
+            if specialization:
+                doctors = DoctorProfile.objects.filter(admin_approved=True, specialization__icontains=specialization).order_by('-experiance')
+            
+            print(doctors)
+            paginator = Paginator(doctors, 10)
+            page_number = request.GET.get("page")
+            page_obj = paginator.get_page(page_number)
+
             patient_obj = PatientPredictedDisease(patient=patient, symptoms=user_symptoms[0], model="Disease Prediction Model", disease=predicted_disease )
             patient_obj.save()
 
@@ -145,7 +205,9 @@ def patientDiseasePredict(request):
             context_symptoms = {
                 'my_list': symptoms,
                 'predicted_disease': predicted_disease,
-                'about_disease' : about_disease
+                'about_disease' : about_disease,
+                'specialization': specialization,
+                "page_obj": page_obj
             }
             # Pass the symptoms list to the template context
 
@@ -155,8 +217,6 @@ def patientDiseasePredict(request):
 
     # If the request method is not POST, render the form again
     return render(request, 'patient-app/patient_disease_predict.html', context=context_symptoms)
-
-
 
 
 
