@@ -19,8 +19,12 @@ def generateHealthTip():
 
 def generateAboutDisease(disease):
     model = genai.GenerativeModel('gemini-pro')
-    response = model.generate_content(f"Compose a concise description of a {disease} with in 30 words. Include information about its symptoms, causes, and possible treatments. Make sure to emphasize the significance of the disease and its impact on individuals or society. Consider using medical terminology to convey accuracy and clarity. Your description should provide enough detail to educate readers about the disease while maintaining brevity and readability.")
-    return response.text
+    try:
+        response = model.generate_content(f"Compose a concise description of a {disease} with in 30 words. Include information about its symptoms, causes, and possible treatments. Make sure to emphasize the significance of the disease and its impact on individuals or society. Consider using medical terminology to convey accuracy and clarity. Your description should provide enough detail to educate readers about the disease while maintaining brevity and readability.")
+        return response.text
+    except:
+        return None
+
 
 
 
