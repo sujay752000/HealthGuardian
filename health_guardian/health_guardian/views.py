@@ -1,7 +1,10 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from accounts.models import DoctorProfile
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.core.mail import EmailMessage
+from health_guardian.settings import EMAIL_HOST_USER, CONTACT_EMAIL
+from django.contrib.sites.shortcuts import get_current_site
 
 
 def index_view(request):
@@ -36,4 +39,54 @@ def index_view(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    return render(request, "index.html", {"page_obj": page_obj})
+    details = {
+        "page_obj": page_obj
+    }
+
+
+    if request.method == 'POST':
+
+        first_name = request.POST.get("first_name")
+        last_name = request.POST.get("last_name")
+        email_addr = request.POST.get("email_addr")
+        coments = request.POST.get("coments")
+
+        if first_name and last_name and email_addr and coments:
+            email = EmailMessage(
+                subject="Contact Message",
+                body=f"Message = {coments} \nFrom : {first_name} {last_name}\n Email : {email_addr}",
+                from_email=EMAIL_HOST_USER,
+                to=[CONTACT_EMAIL]
+            )
+            email.send(fail_silently=True)
+
+
+            email_2 = EmailMessage(
+                subject="Thank you for connecting us !",
+                body="Thank you for reaching out and connecting with us! Your message has been received, and our team will respond to you as soon as possible. We appreciate your patience and look forward to assisting you further.",
+                from_email=EMAIL_HOST_USER,
+                to=[email_addr]
+            )
+
+            email_2.send(fail_silently=True)
+
+            if request.is_secure():
+                protocol = 'https'
+            else:
+                protocol = 'http'
+                url = protocol + "://" + str(get_current_site(request)) + '#contact_us'
+
+            return redirect(url)
+        else:
+
+            if request.is_secure():
+                protocol = 'https'
+            else:
+                protocol = 'http'
+                url = protocol + "://" + str(get_current_site(request)) + '#contact_us'
+
+            return redirect(url)
+
+    return render(request, "index.html", context=details)
+
+

@@ -352,37 +352,38 @@
             <div id="contact_us" class="col-lg-8">
                 <h3 id="search_doctors" class="my-4 h3 display-5 text-center">Contact Us</h3>
 
-                <form action="" method="post"
+                <form action="" method="post" enctype="multipart/form-data"
                     class="w-100 d-flex flex-column justify-content-center align-items-center">
+                    {% csrf_token %}
                     <div class="mb-4 col-md-8 col-sm-10 col-12">
                         <div class="form-floating mb-2">
-                            <input type="text" class="form-control" id="floatingInput" placeholder="First Name"">
+                            <input type="text" class="form-control" name="first_name" id="floatingInput" placeholder="First Name" required>
                         <label for=" floatingInput">First Name</label>
                         </div>
                     </div>
 
                     <div class="mb-4 col-md-8 col-sm-10 col-12">
                         <div class="form-floating mb-2">
-                            <input type="text" class="form-control" id="floatingInput" placeholder="Last Name"">
+                            <input type="text" class="form-control" name="last_name" id="floatingInput" placeholder="Last Name" required>
                         <label for=" floatingInput">Last Name</label>
                         </div>
                     </div>
                     <div class="mb-4 col-md-8 col-sm-10 col-12">
                         <div class="form-floating mb-2">
-                            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                            <input type="email" class="form-control" name="email_addr" id="floatingInput" placeholder="name@example.com" required>
                             <label for="floatingInput">Email address</label>
                         </div>
                     </div>
                     <div class="mb-2 col-md-8 col-sm-10 col-12">
                         <div class="form-floating">
-                            <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2"
-                                style="height: 100px"></textarea>
+                            <textarea name="coments" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2"
+                                style="height: 100px" required></textarea>
                             <label for="floatingTextarea2">Comments</label>
                         </div>
                     </div>
 
                     <div class="mb-2 col-md-8 col-sm-10 col-12 d-flex justify-content-center">
-                        <button type="button" class="w-50 text-center btn fw-semibold fs-5 shadow rounded"
+                        <button type="submit" class="w-50 text-center btn fw-semibold fs-5 shadow rounded"
                             style="background-color: #C4164C; color: white;">Send <i
                                 class="fa-solid fa-envelope fa-md"></i></button>
                     </div>
