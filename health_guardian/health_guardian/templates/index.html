@@ -409,19 +409,20 @@
             </div>
             <div class="col-lg-3 col-sm-6 container-fluid mb-3">
                 <p class="fw-semibold text-decoration-underline lh-2">For Patients</p>
-                <a class="nav-link active" href="#">Predict Disease</a>
-                <a class="nav-link" href="#">Appointment Booking</a>
-                <a class="nav-link" href="#">Consult Doctors</a>
-                <a class="nav-link" href="#">Prepare Diet Charts and Precautions</a>
-                <a class="nav-link" href="#">Personalized Chat Bot Assistant</a>
+                <a class="nav-link active" href="{% url 'patient_predict_disease' %}">Predict Disease</a>
+                <a class="nav-link" href="{% url 'patient_doctor_search' %}">Appointment Booking</a>
+                <a class="nav-link" href="{% url 'patient_doctor_search' %}">Consult Doctors</a>
+                <a class="nav-link" href="{% url 'patient_diet_precautions' %}">Prepare Diet Charts and Precautions</a>
+                <a class="nav-link" href="{% url 'patient_chat_assistant' %}">Personalized Chat Bot Assistant</a>
 
             </div>
             <div class="col-lg-3 col-sm-6 container-fluid mb-3">
                 <p class="fw-semibold text-decoration-underline lh-2">For Doctors</p>
-                <a class="nav-link active" href="#">Doctor Profile</a>
-                <a class="nav-link" href="#">Manage Patients</a>
-                <a class="nav-link" href="#">Patient Consultation</a>
-                <a class="nav-link" href="#">Manage Appointmnets</a>
+                <a class="nav-link active" href="{% url 'doctor_dashboard' %}">Doctor Profile</a>
+                <a class="nav-link" href="{% url 'doctor_timings_update' %}">Schedule Consultation Timings</a>
+                <a class="nav-link" href="{% url 'doctor_clinical_appointments' %}">Clinic Consultations</a>
+                <a class="nav-link" href="{% url 'doctor_online_appointments' %}">Online Consultations</a>
+                <a class="nav-link" href="{% url 'doctor_chat_assistant' %}">Chat Bot Assistant</a>
             </div>
             <div class="col-lg-3 col-sm-6 container-fluid mb-3">
                 <p class="fw-semibold text-decoration-underline lh-2">Social</p>

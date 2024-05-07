@@ -1,0 +1,218 @@
+{% extends extended_template %}
+{% load widget_tweaks %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+
+    {% block css %}
+    <style>
+        @media screen and (max-width: 400px) {
+
+            /* Extra large devices (xl) */
+            .send_container {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .send_container,
+            button,
+            .input_box,
+            .input_box {
+                width: 100% !important;
+            }
+        }
+
+        .user_image {
+            width: 20px;
+        }
+
+        .message_container {
+            padding: 5px 10px;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            min-width: 95%;
+            min-height: 350px;
+            max-height: 350px;
+            overflow-y: auto;
+            font-size: smaller;
+            position: relative;
+        }
+
+        .recieve {
+            align-self: self-start;
+            background-color: #f2f2f2;
+            max-width: 80%;
+            display: inline;
+        }
+
+        .send {
+            align-self: flex-end;
+            background-color: beige;
+            max-width: 80%;
+            display: inline;
+        }
+
+        .send_container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            position: relative;
+            top: 0px;
+        }
+    </style>
+
+    {% endblock css %}
+
+
+</head>
+
+<body>
+
+    {% block dash-content %}
+
+    <div class="row m-2 mt-1">
+        <h5 class="display-6 text-center">Chat</h5>
+        <div class="card shadow message_container">
+            {% if grp_messages %}
+            {% for msg, photo in grp_messages %}
+            {% if msg.sender.username != current_username %}
+            <div id="recieve" class="recieve my-3 mx-2 rounded px-3 py-1">
+                <span class="">
+                    {% if photo %}
+                    <img class="user_image rounded-pill" src="/media/{{ photo }}" alt="">
+                    {% endif %}
+                    <strong>{{ msg.sender.get_full_name }}:</strong> {{ msg.message }}
+                </span>
+                <p class="" style="text-align: right;">{{ msg.timestamp }}</p>
+            </div>
+            {% else %}
+            <div id="send" class="send my-2 mx-2 rounded px-3 py-1">
+                <span class="">
+                    {% if photo %}
+                    <img class="user_image rounded-pill" src="/media/{{ photo }}" alt="">
+                    {% endif %}
+                    <strong>{{ msg.sender.get_full_name }}:</strong> {{ msg.message }}
+                </span>
+                <p class="" style="text-align: right;">{{ msg.timestamp }}</p>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+
+        </div>
+
+        <form class="send_container shadow row my-3 mx-1 py-2" style="font-size: larger;">
+            <div class="input_box col-9">
+                <input id="chat-message-input" class="form-control form-control" type="text"
+                    placeholder="type message ..." aria-label=".form-control-lg example">
+            </div>
+            <button id="chat-message-submit" type="button" class="btn btn-success  col-3">Send</button>
+        </form>
+
+
+    </div>
+
+    {{ url_join|json_script:"users_join_url" }}
+    {{ room|json_script:"json-roomname" }}
+    {{ current_username|json_script:"json-username" }}
+
+
+
+    {% endblock dash-content %}
+
+
+
+    {% block js %}
+    <script>
+        // Get the container element
+        var container = document.querySelector('.message_container');
+
+        // Function to scroll to the bottom of the container
+        function scrollToBottom() {
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Call the function to scroll to the bottom initially or whenever necessary
+        scrollToBottom();
+    </script>
+
+    <script>
+        const roomName = JSON.parse(document.getElementById('json-roomname').textContent);
+        const userName = JSON.parse(document.getElementById('json-username').textContent);
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/'
+            + roomName
+            + '/'
+        );
+
+        chatSocket.onclose = function (e) {
+            console.log('onclose')
+        }
+
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+
+            if (data.message) {
+                if (data.username !== userName) {
+                    // Received message
+                    document.querySelector('#receive').innerHTML += `<div class="recieve my-3 mx-2 rounde px-3 py-1"><span class="">${data.username}:${data.message}</span><p class="" style="text-align: right;">${data.timestamp}</p></div>`;
+                } else {
+                    // Sent message
+                    document.querySelector('#send').innerHTML += `<div class="send my-2 mx-2 rounded px-3 py-1"><span class=""><strong>You:</strong>${data.message}</span><p class="" style="text-align: right;">${data.timestamp}</p></div>`;
+                }
+            } else {
+                alert('The message was empty!');
+            }
+
+            scrollToBottom();
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function (e) {
+            if (e.keyCode === 13) {
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function (e) {
+            e.preventDefault()
+
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+
+            console.log({
+                'message': message,
+                'username': userName,
+                'room': roomName
+            })
+
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': userName,
+                'room': roomName
+            }));
+
+            messageInputDom.value = '';
+
+            return false
+        };
+    </script>
+
+
+    {% endblock js %}
+
+
+</body>
+
+</html>

@@ -37,6 +37,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,7 +55,9 @@ INSTALLED_APPS = [
     'adminuser',
     'news',
     'django_extensions',
-    'videocall'
+    'videocall',
+    'chatapp',
+    'channels',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -89,7 +92,27 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'health_guardian.wsgi.application'
+# WSGI_APPLICATION = 'health_guardian.wsgi.application'
+ASGI_APPLICATION = "health_guardian.asgi.application"
+
+
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels.layers.InMemoryChannelLayer'
+#     }
+# }
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            #"hosts": [('127.0.0.1', 6379)],
+            "hosts" : [('redis://default:GtTLLY1sQhTB39w3a4y1ymAmJeJODtGL@redis-17824.c14.us-east-1-3.ec2.redns.redis-cloud.com:17824')],
+        },
+        #"BACKEND":"channels.layers.InMemoryChannelLayer"
+    },
+}
 
 
 # Database
@@ -101,6 +124,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 
 # Password validation
@@ -173,6 +197,6 @@ RAZORPAY_KEY_ID = env('RAZORPAY_KEY_ID')
 RAZORPAY_KEY_SECRET = env('RAZORPAY_KEY_SECRET')
 
 GRAPH_MODELS = {
-  'all_applications': True,
-  'group_models': True,
+    'app_labels': ["chatapp", "doctor", "patient"],
+    'group_models': True,
 }

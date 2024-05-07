@@ -19,10 +19,11 @@ urlpatterns = [
     path('patient-payment-handler', views.patientPaymentHandleRequest, name="patient_payment_handler" ),
     path('patient-online-consultations', views.patientOnlineConsultationTable, name="patient_online_consultations" ),
     path('patient-clinic-consultations', views.patientClinicConsultationTable, name="patient_clinic_consultations" ),
-    path('patient-room-details', views.patientVideoCallView, name="patient_room_details" ),
-    path('patient-room', views.patientVideoCall, name="patient_room" ),
     path('patient-room-join/<int:booking_id>/<int:doctor_id>/<int:patient_id>', views.patientJoinCall, name="patient_room_join" ),
     path('patient-chat-assistant', views.patientChatAssistant, name="patient_chat_assistant" ),
-]
 
+    path('patient-consultation-options/<int:booking_id>/<int:doctor_id>/<int:patient_id>', views.patientOnlineConsultationOptions, name="patient_consultation_options" ),
+    path('patient-videocall-option/<int:booking_id>/<int:doctor_id>/<int:patient_id>', views.patientVideoCallOption, name="patient_videocall_option" ),
+    path('patient-chat-option/<int:booking_id>/<int:doctor_id>/<int:patient_id>', views.patientChatOption, name="patient_chat_option" ),
+]
 

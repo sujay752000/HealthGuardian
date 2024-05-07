@@ -15,6 +15,10 @@
             width: 100vw;
             height: 100vh;
         }
+
+        #online > .link-name{
+            color: #032ea5 !important;
+        }
     </style>
 
     {% endblock css %}
@@ -34,6 +38,8 @@
 
 
     </div>
+
+    {{ url_join|json_script:"users_join_url" }}
 
 
 
@@ -59,6 +65,7 @@
             // @param 3: Room ID
             // @param 4: User ID
             // @param 5: Username
+            const user_url = JSON.parse(document.getElementById("users_join_url").textContent);
             const roomID = getUrlParams(window.location.href)['roomID'] || (Math.floor(Math.random() * 10000) + "");
             const userID = Math.floor(Math.random() * 10000) + "";
             const userName = "{{ name }}"
@@ -72,7 +79,7 @@
                 container: document.querySelector("#root"),
                 sharedLinks: [{
                     name: 'Personal link',
-                    url: window.location.protocol + '//' + window.location.host + window.location.pathname + '?roomID=' + roomID,
+                    url: user_url,
                 }],
                 scenario: {
                     mode: ZegoUIKitPrebuilt.VideoConference,
