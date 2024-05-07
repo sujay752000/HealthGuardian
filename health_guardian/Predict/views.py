@@ -81,7 +81,7 @@ def predictDisease(symptoms):
             "final_prediction": final_prediction
         }
 
-    print(predictions)
+    # print(predictions)
 
     return predictions["final_prediction"]
 

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from patient.models import OnlineConsultationPassKeys
 from accounts.views import is_patient, is_doctor, is_admin, dashboardRedirector
 from django.contrib import messages
-
+from django.contrib.sites.shortcuts import get_current_site
 # Create your views here.
 
 
@@ -14,6 +14,7 @@ def userVideoCall(request):
     doctor_id = request.GET.get('doctor_id')
     patient_id = request.GET.get('patient_id')
     pass_key_obj = get_object_or_404(OnlineConsultationPassKeys, booking_instance=booking_id, doctor=doctor_id, patient=patient_id )
+    pass_key = pass_key_obj.pass_key
     if pass_key_obj:
         extended_template = None
         if is_admin(request.user):
@@ -23,7 +24,15 @@ def userVideoCall(request):
         elif is_doctor(request.user):
             extended_template = "doctor-app/doctor_dashboard.html"
         name = request.user.get_full_name()
-        return render(request, 'video_call.html', {'name': name, 'extended_template': extended_template})
+
+        if request.is_secure():
+            protocol = 'https'
+        else:
+            protocol = 'http'
+
+        url_join = protocol + "://" + str(get_current_site(request)) + f"/videochat/videocall?roomID={pass_key}&booking_id={booking_id}&doctor_id={doctor_id}&patient_id={patient_id}"
+
+        return render(request, 'video_call.html', {'name': name, 'extended_template': extended_template, 'url_join': url_join})
     else:
         messages.error(request, "Invalid Meeting")
         return dashboardRedirector(request.user)

@@ -329,9 +329,7 @@ def doctorOnlineConsultationRegister(request):
                 messages.success(request, "Successfully added your online consultation and time schedule")
                 return redirect("doctor_dashboard")
             else:
-                print(online_consultation_form.errors)
                 online_consultation_form_errors = online_consultation_form.non_form_errors()
-                print(online_consultation_form_errors)
                 messages.error(request, f"Invalid Details")
                 zipped_online_consultation_form = zip(online_consultation_form, WEEK)
                 return render(request, "doctor-app/doctor_online_register.html", {
@@ -479,13 +477,73 @@ def doctorOnlineAppointments(request):
 
 # video call
 
+# @login_required(login_url='doctor_login')
+# @user_passes_test(is_doctor)
+# @user_passes_test(clinic_profile_completed, login_url="doctor_clinic_profile")
+# @user_passes_test(online_consult_completed, login_url="doctor_online_profile")
+# def doctorVideoCall(request):
+#     name = request.user.get_full_name()
+#     return render(request, 'doctor-app/doctor_video_call.html', {'name': name})
+
 @login_required(login_url='doctor_login')
 @user_passes_test(is_doctor)
 @user_passes_test(clinic_profile_completed, login_url="doctor_clinic_profile")
 @user_passes_test(online_consult_completed, login_url="doctor_online_profile")
-def doctorVideoCall(request):
-    name = request.user.get_full_name()
-    return render(request, 'doctor-app/doctor_video_call.html', {'name': name})
+def doctorOnlineConsultationOptions(request, booking_id, doctor_id, patient_id):
+    pass_key_obj = get_object_or_404(OnlineConsultationPassKeys, booking_instance=booking_id, doctor=doctor_id, patient=patient_id )
+    if pass_key_obj:
+        doctor_name = DoctorProfile.objects.get(id=doctor_id).user.get_full_name()
+        patient_name = PatientProfile.objects.get(id=patient_id).patient.get_full_name()
+        details = {
+            'doctor_name': doctor_name,
+            'patient_name': patient_name,
+            'booking_id': booking_id,
+            'doctor_id': doctor_id,
+            'patient_id': patient_id
+        }
+        return render(request, "doctor-app/doctor_online_consultation_options.html", context=details)
+    else:
+        return render(request, "doctor-app/doctor_online_consultation_options.html")
+
+
+
+@login_required(login_url='doctor_login')
+@user_passes_test(is_doctor)
+@user_passes_test(clinic_profile_completed, login_url="doctor_clinic_profile")
+@user_passes_test(online_consult_completed, login_url="doctor_online_profile")
+def doctorVideoCallOption(request, booking_id, doctor_id, patient_id):
+    pass_key_obj = get_object_or_404(OnlineConsultationPassKeys, booking_instance=booking_id, doctor=doctor_id, patient=patient_id )
+    pass_key = pass_key_obj.pass_key
+    if pass_key_obj:
+        protocol = 'http'
+        if request.is_secure():
+            protocol = 'https'
+        else:
+            protocol = 'http'
+
+        url_join = protocol + "://" + str(get_current_site(request)) + f"/videochat/videocall?roomID={pass_key}&booking_id={booking_id}&doctor_id={doctor_id}&patient_id={patient_id}"
+
+        return redirect(url_join)
+        
+
+@login_required(login_url='doctor_login')
+@user_passes_test(is_doctor)
+@user_passes_test(clinic_profile_completed, login_url="doctor_clinic_profile")
+@user_passes_test(online_consult_completed, login_url="doctor_online_profile")
+def doctorChatOption(request, booking_id, doctor_id, patient_id):
+    pass_key_obj = get_object_or_404(OnlineConsultationPassKeys, booking_instance=booking_id, doctor=doctor_id, patient=patient_id )
+    pass_key = pass_key_obj.pass_key
+    if pass_key_obj:
+        protocol = 'http'
+        if request.is_secure():
+            protocol = 'https'
+        else:
+            protocol = 'http'
+
+        # url_join = protocol + "://" + str(get_current_site(request)) + f"/onlinechat/chat?roomID={pass_key}&booking_id={booking_id}&doctor_id={doctor_id}&patient_id={patient_id}"
+
+        return redirect("chat", room=pass_key)
+        
 
 
 
@@ -505,11 +563,14 @@ def doctorJoinCall(request, booking_id, doctor_id, patient_id):
             else:
                 protocol = 'http'
 
-            url_join = protocol + "://" + str(get_current_site(request)) + f"/videochat/videocall?roomID={roomID}&booking_id={booking_id}&doctor_id={doctor_id}&patient_id={patient_id}"
-            return redirect(url_join)
+            messages.success(request, "Please select any mode for consultation:")
+            return redirect("doctor_consultation_options", booking_id=booking_id, doctor_id=doctor_id, patient_id=patient_id)
+
         else:
             messages.error(request, "Invalid Pass Key")
     return render(request, 'doctor-app/doctor_join_video_call.html', {'pass_key': pass_key})
+
+
 
 
 @login_required(login_url='doctor_login')
@@ -530,7 +591,6 @@ def doctorDiseasePredict(request):
             messages.error(request, "Please Enter your Symptoms")
             return redirect("patient_predict_disease")
         else:
-            print(user_symptoms[0])
             """ Calling the predicting disease function """
             predicted_disease = predictDisease(user_symptoms[0])
 

@@ -18,9 +18,11 @@ urlpatterns = [
     path('doctor-clinical-appointments', views.doctorClinicalAppointments, name="doctor_clinical_appointments" ),
     path('doctor-online-appointments', views.doctorOnlineAppointments, name="doctor_online_appointments" ),
     path('doctor-patient-profile/<int:pk>', views.doctorPatientViewProfile, name="doctor_patient_profile" ),
-    path('doctor-room', views.doctorVideoCall, name="doctor_room" ),
+    # path('doctor-room', views.doctorVideoCall, name="doctor_room" ),
     path('doctor-room-join/<int:booking_id>/<int:doctor_id>/<int:patient_id>', views.doctorJoinCall, name="doctor_room_join" ),
+    path('doctor-consultation-options/<int:booking_id>/<int:doctor_id>/<int:patient_id>', views.doctorOnlineConsultationOptions, name="doctor_consultation_options" ),
+    path('doctor-videocall-option/<int:booking_id>/<int:doctor_id>/<int:patient_id>', views.doctorVideoCallOption, name="doctor_videocall_option" ),
+    path('doctor-chat-option/<int:booking_id>/<int:doctor_id>/<int:patient_id>', views.doctorChatOption, name="doctor_chat_option" ),
     path('doctor-chat-assistant', views.doctorChatAssistant, name="doctor_chat_assistant" ),
 ]
-
 

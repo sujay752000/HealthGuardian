@@ -179,21 +179,21 @@ def patientDiseasePredict(request):
             messages.error(request, "Please Enter your Symptoms")
             return redirect("patient_predict_disease")
         else:
-            print(user_symptoms[0])
+            # print(user_symptoms[0])
             """ Calling the predicting disease function """
             predicted_disease = predictDisease(user_symptoms[0])
 
             about_disease = generateAboutDisease(predicted_disease)
 
             specialization = disease_specializations.get(predicted_disease)
-            print(specialization)
+            # print(specialization)
 
             doctors = []
 
             if specialization:
                 doctors = DoctorProfile.objects.filter(admin_approved=True, specialization__icontains=specialization).order_by('-experiance')
             
-            print(doctors)
+            # print(doctors)
             paginator = Paginator(doctors, 10)
             page_number = request.GET.get("page")
             page_obj = paginator.get_page(page_number)
@@ -501,9 +501,9 @@ def patientClinicBookAppointmeentDate(request, doctor_id, patient_id):
         user_date = request.POST.get('booked_date')
         user_date = datetime.datetime.strptime(user_date, '%m/%d/%Y').date() 
 
-        print(user_date)
-        print(user_date.strftime('%Y-%m-%d'))
-        print(user_date.strftime('%A'))
+        # print(user_date)
+        # print(user_date.strftime('%Y-%m-%d'))
+        # print(user_date.strftime('%A'))
 
         if user_date not in formatted_off_days and calendar.day_name[user_date.weekday()].capitalize() not in formatted_weekdays_without_timings:
             messages.success(request, f"Selected date {user_date}, please select your comfortable time slot")
@@ -547,15 +547,15 @@ def patientOnlineBookAppointmeentDate(request, doctor_id, patient_id):
         user_date = request.POST.get('booked_date')
         user_date = datetime.datetime.strptime(user_date, '%m/%d/%Y').date() 
 
-        print(user_date)
-        print(user_date.strftime('%Y-%m-%d'))
-        print(user_date.strftime('%A'))
+        # print(user_date)
+        # print(user_date.strftime('%Y-%m-%d'))
+        # print(user_date.strftime('%A'))
 
-        print(formatted_off_days)
-        print(formatted_weekdays_without_timings)
+        # print(formatted_off_days)
+        # print(formatted_weekdays_without_timings)
 
         if user_date not in formatted_off_days and calendar.day_name[user_date.weekday()].capitalize() not in formatted_weekdays_without_timings:
-            print("True")
+            # print("True")
             messages.success(request, f"Selected date {user_date}, please select your comfortable time slot")
             return redirect("patient_online_appointment_time", doctor_id=doctor_id, patient_id=patient_id, date=user_date)
         else:
@@ -568,7 +568,7 @@ def patientOnlineBookAppointmeentDate(request, doctor_id, patient_id):
 
 
 razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
-print(razorpay_client)
+# print(razorpay_client)
 
 
 @login_required(login_url='patient_login')
@@ -580,7 +580,7 @@ def patientClinicBookAppointmentTime(request, doctor_id, patient_id, date):
         doctor = DoctorProfile.objects.get(id=doctor_id)
         patient = PatientProfile.objects.get(id=patient_id)
         user_date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
-        print(user_date)
+        # print(user_date)
         clinic_timings = ClinicAppointmnetTimings.objects.filter(doctor=doctor)
         clinic = ClinicDetails.objects.get(doctor=doctor)
         doctor_consulting_fee = clinic.consultation_fee
@@ -591,9 +591,9 @@ def patientClinicBookAppointmentTime(request, doctor_id, patient_id, date):
         formatted_weekdays_without_timings = [day.capitalize() for day in weekdays_without_timings]
 
         current_date = datetime.date.today()
-        print(formatted_off_days)
-        print(formatted_weekdays_without_timings)
-        print(user_date >= current_date)
+        # print(formatted_off_days)
+        # print(formatted_weekdays_without_timings)
+        # print(user_date >= current_date)
 
         if user_date not in formatted_off_days and calendar.day_name[user_date.weekday()].capitalize() not in formatted_weekdays_without_timings and user_date >= current_date:
             # Get the day of the week from the user_date
@@ -619,7 +619,7 @@ def patientClinicBookAppointmentTime(request, doctor_id, patient_id, date):
                     time_slots.append(current_time.time().strftime('%I:%M %p'))
                     current_time += datetime.timedelta(hours=1)
 
-            print(time_slots)
+            # print(time_slots)
 
             if time_slots:
 
@@ -653,13 +653,13 @@ def patientClinicBookAppointmentTime(request, doctor_id, patient_id, date):
                             protocol = 'http'
 
                         callback_url = protocol + "://" + str(get_current_site(request))+"/patient/patient-payment-handler"
-                        print(callback_url)
+                        # print(callback_url)
 
-                        print(callback_url)
+                        # print(callback_url)
                         notes = {'order-type': "Consultation Fee"}
                         try:
                             razorpay_order = razorpay_client.order.create(dict(amount=doctor_consulting_fee*100, currency=order_currency, notes = notes, payment_capture='0'))
-                            print(razorpay_order['id'])
+                            # print(razorpay_order['id'])
                             booking_obj.razorpay_order_id = razorpay_order['id']
                             booking_obj.save()
 
@@ -678,7 +678,7 @@ def patientClinicBookAppointmentTime(request, doctor_id, patient_id, date):
                             return render(request, "patient-app/patient_appointment_confirm.html", context=details )
                         
                         except Exception as e:
-                            print("Razorpay Error:", e)
+                            # print("Razorpay Error:", e)
                             return HttpResponse("Razorpay Error: " + str(e))
                             
                     else:
@@ -751,7 +751,7 @@ def patientOnlineBookAppointmentTime(request, doctor_id, patient_id, date):
                     time_slots.append(current_time.time().strftime('%I:%M %p'))
                     current_time += datetime.timedelta(hours=1)
 
-            print(time_slots)
+            # print(time_slots)
 
             if time_slots:
 
@@ -786,11 +786,11 @@ def patientOnlineBookAppointmentTime(request, doctor_id, patient_id, date):
 
                         callback_url = protocol + "://" + str(get_current_site(request))+"/patient/patient-payment-handler"
                         # callback_url = 'http://'+ str(get_current_site(request))
-                        print(callback_url)
+                        # print(callback_url)
                         notes = {'order-type': "Consultation Fee"}
                         try:
                             razorpay_order = razorpay_client.order.create(dict(amount=doctor_consulting_fee*100, currency=order_currency, notes = notes, payment_capture='0'))
-                            print(razorpay_order['id'])
+                            # print(razorpay_order['id'])
                             booking_obj.razorpay_order_id = razorpay_order['id']
                             booking_obj.save()
 
@@ -813,7 +813,7 @@ def patientOnlineBookAppointmentTime(request, doctor_id, patient_id, date):
                             return render(request, "patient-app/patient_appointment_confirm.html", context=details )
                         
                         except Exception as e:
-                            print("Razorpay Error:", e)
+                            # print("Razorpay Error:", e)
                             return HttpResponse("Razorpay Error: " + str(e))
                             
                     else:
@@ -862,7 +862,7 @@ def patientPaymentHandleRequest(request):
             booking_db.razorpay_signature = signature
             booking_db.save()
             result = razorpay_client_2.utility.verify_payment_signature(params_dict)
-            print(result)
+            # print(result)
             if result==True:
                 amount = booking_db.consulting_fee * 100   #we have to pass in paisa
                 try:
@@ -894,7 +894,7 @@ def patientPaymentHandleRequest(request):
 
                     pdf = render_to_pdf("patient-app/patient_appointment_receipt.html", data)
 
-                    print("Done-1")
+                    # print("Done-1")
 
                     if pdf:
                         patient_email = booking_db.patient.patient.email
@@ -905,10 +905,10 @@ def patientPaymentHandleRequest(request):
                         email.attach(filename, pdf, 'application/pdf')
                         email.content_subtype = 'html' 
                         email.send(fail_silently=True)
-                        print("Done-2")
+                        # print("Done-2")
 
                     messages.success(request, "Payment successfull appointment receipt has been sent to your email.")
-                    print("Done-3")
+                    # print("Done-3")
                     if booking_db.appointment_type == 1:
                         return redirect("patient_clinic_consultations")
                     else:
@@ -1019,25 +1019,7 @@ def patientClinicConsultationTable(request):
     page_obj = paginator.get_page(page_number)
     return render(request, "patient-app/patient_clinic_consultation_table.html", {"page_obj": page_obj})
 
-
-
-@login_required(login_url='patient_login')
-@user_passes_test(is_patient)
-@user_passes_test(profile_completed, login_url="patient_profile")
-def patientVideoCallView(request):
-    return render(request, "patient-app/patient_video_call_view.html")
-
-
-
-
-@login_required(login_url='patient_login')
-@user_passes_test(is_patient)
-@user_passes_test(profile_completed, login_url="patient_profile")
-def patientVideoCall(request):
-    name = request.user.get_full_name()
-    return render(request, 'patient-app/patient_video_call.html', {'name': name})
-
-
+##########################################################################################################
 
 @login_required(login_url='patient_login')
 @user_passes_test(is_patient)
@@ -1054,16 +1036,74 @@ def patientJoinCall(request, booking_id, doctor_id, patient_id):
             else:
                 protocol = 'http'
 
-            url_join = protocol + "://" + str(get_current_site(request)) + f"/videochat/videocall?roomID={roomID}&booking_id={booking_id}&doctor_id={doctor_id}&patient_id={patient_id}"
-
-            return redirect(url_join)
+            messages.success(request, "Please select any mode for consultation:")
+            return redirect("patient_consultation_options", booking_id=booking_id, doctor_id=doctor_id, patient_id=patient_id)
         else:
             messages.error(request, "Invalid Pass Key")
     return render(request, 'patient-app/patient_join_video_call.html', {'pass_key': pass_key})
 
 
 
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientOnlineConsultationOptions(request, booking_id, doctor_id, patient_id):
+    pass_key_obj = get_object_or_404(OnlineConsultationPassKeys, booking_instance=booking_id, doctor=doctor_id, patient=patient_id )
+    if pass_key_obj:
+        doctor_name = DoctorProfile.objects.get(id=doctor_id).user.get_full_name()
+        patient_name = PatientProfile.objects.get(id=patient_id).patient.get_full_name()
+        details = {
+            'doctor_name': doctor_name,
+            'patient_name': patient_name,
+            'booking_id': booking_id,
+            'doctor_id': doctor_id,
+            'patient_id': patient_id
+        }
+        return render(request, "patient-app/patient_online_consultation_options.html", context=details)
+    else:
+        return render(request, "patient-app/patient_online_consultation_options.html")
 
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientVideoCallOption(request, booking_id, doctor_id, patient_id):
+    pass_key_obj = get_object_or_404(OnlineConsultationPassKeys, booking_instance=booking_id, doctor=doctor_id, patient=patient_id )
+    pass_key = pass_key_obj.pass_key
+    if pass_key_obj:
+        protocol = 'http'
+        if request.is_secure():
+            protocol = 'https'
+        else:
+            protocol = 'http'
+
+        url_join = protocol + "://" + str(get_current_site(request)) + f"/videochat/videocall?roomID={pass_key}&booking_id={booking_id}&doctor_id={doctor_id}&patient_id={patient_id}"
+
+        return redirect(url_join)
+        
+
+
+@login_required(login_url='patient_login')
+@user_passes_test(is_patient)
+@user_passes_test(profile_completed, login_url="patient_profile")
+def patientChatOption(request, booking_id, doctor_id, patient_id):
+    pass_key_obj = get_object_or_404(OnlineConsultationPassKeys, booking_instance=booking_id, doctor=doctor_id, patient=patient_id )
+    pass_key = pass_key_obj.pass_key
+    if pass_key_obj:
+        protocol = 'http'
+        if request.is_secure():
+            protocol = 'https'
+        else:
+            protocol = 'http'
+
+        # url_join = protocol + "://" + str(get_current_site(request)) + f"/onlinechat/chat?roomID={pass_key}&booking_id={booking_id}&doctor_id={doctor_id}&patient_id={patient_id}"
+
+        return redirect("chat", room=pass_key)
+        
+
+
+###########################################################################################################
 @login_required(login_url='patient_login')
 @user_passes_test(is_patient)
 @user_passes_test(profile_completed, login_url="patient_profile")
@@ -1075,7 +1115,5 @@ def patientChatAssistant(request):
         protocol = 'http'
     url_chat_response =  protocol + "://" + str(get_current_site(request)) + f"/llm/chat-response?prompt="
     return render(request, "patient-app/patient_chat_assistant.html", {'url_chat_response': url_chat_response})
-
-
 
 
