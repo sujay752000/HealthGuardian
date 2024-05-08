@@ -6,19 +6,32 @@ import pandas as pd
 import warnings
 import statistics
 from joblib import load
+import os
+from health_guardian.settings import BASE_DIR
 
 
 # Create your views here.
 
+models_dir = os.path.join(BASE_DIR, 'Savedmodels')
+dataset_dir = os.path.join(BASE_DIR, 'dataset')
+
+
 # Load pre-trained models
-final_svm_model = load('D:/Final_Year_Project/health_guardian/Savedmodels/final_svm_model.joblib')
-final_nb_model = load('D:/Final_Year_Project/health_guardian/Savedmodels/final_nb_model.joblib')
-final_rf_model = load('D:/Final_Year_Project/health_guardian/Savedmodels/final_rf_model.joblib')
+# final_svm_model = load('D:/Final_Year_Project/health_guardian/Savedmodels/final_svm_model.joblib')
+# final_nb_model = load('D:/Final_Year_Project/health_guardian/Savedmodels/final_nb_model.joblib')
+# final_rf_model = load('D:/Final_Year_Project/health_guardian/Savedmodels/final_rf_model.joblib')
+
+final_svm_model = load(os.path.join(models_dir, 'final_svm_model.joblib'))
+final_nb_model = load(os.path.join(models_dir, 'final_nb_model.joblib'))
+final_rf_model = load(os.path.join(models_dir, 'final_rf_model.joblib'))
 
 # Load pre-trained LabelEncoder
-encoder = load('D:/Final_Year_Project/health_guardian/Savedmodels/encoder.joblib')
+# encoder = load('D:/Final_Year_Project/health_guardian/Savedmodels/encoder.joblib')
+encoder = load(os.path.join(models_dir, 'encoder.joblib'))
 
-test_data = pd.read_csv("D:/Final_Year_Project/health_guardian/dataset/Testing.csv").dropna(axis=1)
+# test_data = pd.read_csv("D:/Final_Year_Project/health_guardian/dataset/Testing.csv").dropna(axis=1)
+test_data = pd.read_csv(os.path.join(dataset_dir, 'Testing.csv')).dropna(axis=1)
+
 true_labels = test_data["prognosis"].tolist()
 
 X = test_data.iloc[:,:-1]
@@ -118,5 +131,6 @@ def predict_view(request):
 
     # If the request method is not POST, render the form again
     return render(request, 'disease.html', context=context_symptoms)
+
 
 
