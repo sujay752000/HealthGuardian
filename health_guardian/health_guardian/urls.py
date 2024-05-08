@@ -32,6 +32,6 @@ urlpatterns = [
     path('news/', include('news.urls')),
     path('videochat/', include('videocall.urls')),
     path('onlinechat/', include('chatapp.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
