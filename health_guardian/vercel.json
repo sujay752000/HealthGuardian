@@ -24,4 +24,8 @@
         "dest": "health_guardian/asgi.py"
       }
     ]
+
+    "rewrites": [
+        {"source": "/(.*)", "destination": "/"}
+    ]
   }
