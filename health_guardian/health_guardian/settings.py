@@ -33,8 +33,8 @@ DEBUG = True
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = [
-    '192.168.251.39',
     '127.0.0.1',
+    'localhost'
 ]
 
 
@@ -166,9 +166,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS=[BASE_DIR/ 'health_guardian/static',
-                  BASE_DIR/ 'accounts/static',
-                  BASE_DIR/ 'Predict/static']
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'health_guardian/static'),
+    os.path.join(BASE_DIR, 'accounts/static'),
+    os.path.join(BASE_DIR, 'Predict/static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 MEDIA_URL = 'media/'
 
