@@ -1,6 +1,6 @@
 HealthGuardian
 
-HealthGuardian is a smart web application that leverages machine learning algorithms to predict diseases based on user symptoms. It offers seamless doctor appointments, video consultations, real-time chats, and AI-powered insights powered by LLM (Gemini). The platform enhances healthcare accessibility and enables proactive health management.
+HealthGuardian is a smart web application that leverages machine learning algorithms (Naive Bayes, Random Forest, SVM) to predict diseases based on user symptoms. It offers seamless doctor appointments, video consultations, real-time chats, and AI-powered insights powered by LLM (Gemini). The platform enhances healthcare accessibility and enables proactive health management.
 
 
 
